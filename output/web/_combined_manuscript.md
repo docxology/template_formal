@@ -1,3 +1,596 @@
+# Abstract {#sec:abstract}
+
+This paper presents a strongly-typed, decentralized multiagent simulation —
+an ant-robot colony — as the computational exemplar of the [Research
+Project Template](https://github.com/docxology/template). Each colony
+member is an `Agent` that owns exactly one real, on-disk SQLite database
+and one in-process, fault-injectable protocol endpoint; no agent ever
+touches another agent's storage or network state. The implementation lives
+under `projects/templates/template_formal/src/template_formal/`; the demo
+pipeline is orchestrated by `scripts/02_run_analysis.py`.
+
+The paper's central claim is methodological, not a typing-features
+showcase: static typing's honest value in Python is edit-time/CI-time error
+prevention on structurally representable invariants, and nothing more.
+Nominal identifiers (`AgentId`, `MessageId`, `TxnId` as distinct `NewType`
+wrappers), a tagged-union `Result[T, E]` ADT with `match`-exhaustiveness,
+and a session-typed protocol state machine (`IdleSession` →
+`HandshakingSession` → `EstablishedSession` → `ClosedSession`) each make an
+illegal program a **type error**, verified by a real `mypy --strict`
+subprocess run against six known-bad negative-control fixtures plus three
+known-good positive-control fixtures (`tests/mypy_fixtures/`). Where the type system cannot help — reusing a
+consumed transaction handle, reusing a consumed protocol-phase instance,
+or receiving malformed bytes off an untyped network boundary — the
+implementation runtime-guards instead, and the manuscript says so
+explicitly rather than eliding the distinction.
+
+We also frame, without over-claiming, two additional lenses: the per-agent
+storage schema as a functor $\mathrm{Schema} \to \mathbf{Set}$ in the sense
+of @fong2018seven, and each agent's per-tick decision as an approximate
+minimizer of a closed-form expected-free-energy quantity in the spirit of
+@friston2005theory, bridged to collective organization via the Memory
+Evolutive Systems framework of [@ehresmann2007memory]. Both framings are
+declared as design lenses, not machine-checked mathematical results — the
+paper is explicit about which of its claims are proofs and which are
+analogies.
+
+**Contributions** are architectural, epistemic, and empirical.
+Architecturally: a zero-mock test suite (`tests/`) covering ADT
+exhaustiveness, affine-handle reuse, session-type phase transitions,
+seeded fault injection over a real in-process bus, and a three-agent
+colony integration test exhibiting a real stigmergic positive-feedback
+mechanism (deliberately not overclaimed as "emergence" — see
+@sec:results-discussion). Epistemically: an explicit "What mypy --strict
+proves vs. what is a runtime discipline" section (@sec:honesty-line) that
+pins every strong claim to the ISC (Ideal-State Criterion) number of its
+paired negative-control test, so the claim-to-evidence mapping is
+auditable rather than asserted. Empirically: eight pre-registered analyses
+grouped across three experiment families,
+falsifiable experiments (@sec:results-discussion) — a decay-rate sweep
+revealing a real, non-monotonic threshold effect (near-zero convergence
+below decay $\approx 0.35$, a $100\%$ plateau at moderate decay, and a
+measurable decline at total evaporation); a random-choice null-model
+comparison showing the real mechanism's Wilson-bounded convergence rate
+($93.3\%$) does not overlap a chance baseline's ($0.67\%$); and a
+heterogeneity-magnitude sweep showing convergence rate decreases strictly
+monotonically as agent preferences spread wider — each stated with its
+falsification criterion before its real, seeded result, using genuinely
+new stdlib-only infrastructure (`colony/nullmodel.py`, `colony/sweep.py`)
+rather than one-off scripts.
+
+**Keywords:** strongly typed programming, session types, algebraic data
+types, category theory, Active Inference, multiagent systems, affine types,
+illegal state unrepresentable.
+
+
+
+---
+
+
+
+# Introduction {#sec:introduction}
+
+## Why ant robots
+
+Ant colonies coordinate at scale without any individual ant holding a
+global view of the colony's state: each ant senses locally, acts locally,
+and influences its nestmates only indirectly, through shared, persistent
+traces in the environment — a mode of coordination biologists call
+*stigmergy*. This is not a decorative metaphor for this template; it is
+the actual reason the domain was chosen (per the governing ISA's
+Principles: "the ant-robot domain is chosen because bounded local
+computation, local sensing, and stigmergic ... coordination are actually
+true of ant colonies and actually motivate per-agent local DB + local
+networking — the domain must earn its place scientifically, not
+decoratively"). A decentralized multiagent simulation with **no shared
+global state** — each agent owns its own database file and its own network
+endpoint — is a direct computational analogue of that biological
+constraint, and it happens to be exactly the setting where illegal-state
+bugs (a corrupted message reaching the wrong agent's database, a
+half-finished handshake silently treated as complete) are both easy to
+introduce and easy to make structurally impossible.
+
+## Why strong typing is the research subject, not an implementation detail
+
+Twenty existing exemplars in this monorepo (`projects/templates/*`) cover
+numerical analysis, prose composition, textbooks, and Active Inference
+modeling, but none of them makes strongly-typed program design the load-
+bearing research claim. This gap has a specific character: Python is
+gradually, optionally, structurally typed — `mypy --strict` can reject a
+genuinely broad class of illegal programs at edit-time and in CI, but
+Python has no compiler-enforced affine or structural-linearity discipline
+and no dependent-type checker in its standard toolchain. A template that
+wants to *demonstrate* strong typing honestly therefore has to draw a line
+between what the type checker actually proves and what remains a runtime
+discipline that a determined caller could still violate — and then back
+every claim on either side of that line with a test that would fail if the
+claim were false. @sec:type-architecture states that line explicitly;
+@sec:honesty-line pins each strong claim in it to a numbered test.
+
+## Reader's guide to the manuscript
+
+- **@sec:type-architecture** walks the ADT (`Result[T, E]`), nominal-ID
+  (`AgentId`/`MessageId`/`TxnId`), session-typed protocol
+  (`IdleSession`/`HandshakingSession`/`EstablishedSession`/`ClosedSession`),
+  and affine-discipline (`TransactionHandle`) layers, each grounded in
+  @wadler2015propositions, @pierce2002types, @milner1978theory,
+  @honda1998language, and @jung2018rustbelt, and closes with
+  @sec:honesty-line — the explicit proof-scoping section.
+- **@sec:storage-functor** frames the per-agent SQLite schema as a functor
+  $\mathrm{Schema} \to \mathbf{Set}$, per @fong2018seven and
+  @spivak2012ologs, and states plainly that this is a design lens, not a
+  machine-checked functoriality proof.
+- **@sec:active-inference** frames each agent's per-tick decision as an
+  approximate expected-free-energy minimization, citing @friston2005theory,
+  and connects it to collective biological organization via the Memory
+  Evolutive Systems framework of [@ehresmann2007memory].
+- **@sec:results-discussion** reports the multi-agent colony integration
+  test's stigmergic convergence result (honestly scoped as a real
+  mechanism, not yet a claim of emergence), the mypy-oracle
+  proof-of-detection results, and discusses what evidence would be needed
+  to widen any of these claims.
+- **@sec:references** points to the full bibliography.
+
+## Related empirical grounding
+
+Two further citations anchor the paper's claim that static typing has
+measurable, non-hypothetical value, and that value has documented limits:
+@gao2017type quantified detectable bug categories in a large corpus of
+JavaScript projects and found a meaningful — but bounded — fraction of
+real-world bugs are the kind a type system would have caught; the Google
+Security Blog's 2024 retrospective (@google2024eliminating) reports a
+measured drop in memory-safety vulnerabilities in newly-written,
+memory-safe-by-default Android code, evidence from a production codebase
+rather than a benchmark suite. Neither claim licenses an inference that
+*any* particular typed discipline in this template's code prevents *any*
+particular class of bug beyond what its own paired test demonstrates —
+they establish only that the general research question (does typing
+prevent real bugs?) has real, cited, non-anecdotal answers in the
+literature this template draws on.
+
+Finally, @ongaro2014search (Raft) is cited not because this template
+implements distributed consensus — it explicitly does not (see `Out of
+Scope`: "No production consensus/Raft/Paxos implementation") — but because
+the colony's typed shared "pheromone field" substrate
+(`src/template_formal/colony/pheromone.py`) is a deliberately minimal,
+documentary stand-in for the kind of shared-coordination-state problem Raft
+solves in full; the comparison is drawn explicitly, not left implicit, in
+@sec:results-discussion.
+
+
+
+---
+
+
+
+# Type Architecture {#sec:type-architecture}
+
+## Module layout
+
+The typed surface described in this section is not spread arbitrarily
+across the codebase — each layer below owns exactly one of the concerns
+this paper argues for (ADTs, nominal identifiers, session types, affine
+handles), and each layer is exercised by the colony coordination loop at
+the bottom, never bypassed:
+
+```mermaid
+graph TD
+    A[scripts/02_run_analysis.py] --> B[src/template_formal/colony/]
+    B --> C[src/template_formal/agent/agent.py]
+    C --> D[src/template_formal/storage/]
+    C --> E[src/template_formal/protocol/session.py]
+    C --> F[src/template_formal/agent/agent.py::decide]
+    D --> G[per-agent SQLite file]
+    E --> H[src/template_formal/network/bus.py]
+    B --> I[src/template_formal/colony/pheromone.py]
+    F --> J[expected_free_energy — Friston 2005 framing]
+```
+
+## Algebraic data types: `Result[T, E]`
+
+`src/template_formal/types/result.py` defines `Result[T, E]` as a tagged
+union of two frozen dataclasses, `Ok[T]` and `Err[E]`, each carrying a
+`Literal["ok"]`/`Literal["err"]` tag field. This is the closest structural
+analogue Python offers to the sum types of ML-family languages
+(@milner1978theory) and to the Curry–Howard "propositions as types"
+reading of a disjoint union as a proof of "either $A$ or $B$"
+(@wadler2015propositions): a function returning `Result[T, E]` documents,
+in its signature, that failure is an ordinary, structurally-typed value —
+never an uncaught exception for an *expected* failure mode. `match`/`case`
+narrowing on the `tag` field, combined with `typing.assert_never` in the
+default arm, makes an exhaustiveness bug — a `match` that handles `Ok` and
+forgets `Err` — a real `mypy --strict` type error, not a runtime surprise.
+
+## Nominal identifiers: `AgentId`, `MessageId`, `TxnId`
+
+`src/template_formal/types/ids.py` wraps `uuid.UUID` three times via
+`typing.NewType`: `AgentId`, `MessageId`, `TxnId`. All three are, at
+runtime, plain `UUID` values — indistinguishable from one another and from
+a bare `UUID`. The distinction exists **only** at the type-checker level:
+`mypy --strict` rejects passing an `AgentId` where a `MessageId` is
+expected, even though nothing about the underlying bytes differs. This is
+Pierce's (@pierce2002types) textbook case for nominal typing over
+structural typing where the underlying representation is shared but the
+domain meaning is not.
+
+## Session-typed protocol state machine
+
+`src/template_formal/protocol/session.py` implements a session-typed
+handshake protocol in the tradition of [@honda1998language]: four distinct
+classes — `IdleSession`, `HandshakingSession`, `EstablishedSession`,
+`ClosedSession` — each parameterizing `SessionEndpoint[PhaseT]` with
+exactly one phase marker from `types/phase.py`. Each phase-transition
+method returns the *next* phase's concrete class (e.g. `IdleSession.open()
+-> HandshakingSession`), never a union that also includes an illegal
+successor. Data-transfer methods (`send`/`receive`) exist **only** on
+`EstablishedSession` — they are not defined at all on `IdleSession` or
+`HandshakingSession` — so calling them on the wrong phase is an outright
+attribute-resolution type error under `mypy --strict`, not a caught
+exception at runtime.
+
+The diagram below is the real phase state machine, not a simplification of
+it: every solid edge is a phase-transition method that exists in
+`src/template_formal/protocol/session.py`, and every dashed edge is one of
+the two fault-injected error paths ISC-23/24 test through the in-process
+bus (`network/bus.py`) — `Result.Err(ProtocolViolation(...))` when a
+session method rejects an out-of-order or mis-addressed frame, and
+`Result.Err(MalformedMessage(...))` when `decode_wire_message` rejects
+corrupted wire bytes *before* any phase method ever runs. Neither error
+path advances the session to a new phase class; both are represented as
+terminal outcomes of the attempted transition, matching the code exactly
+(`accept_hello`/`complete` mark `_consumed = True` and return `Err(...)`
+from the *same* phase object, they do not construct a next-phase class).
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Handshaking: open()
+    Idle --> Established: accept_hello() Ok
+    Idle --> IdleRejected: accept_hello() Err
+    Handshaking --> Established: complete() Ok
+    Handshaking --> HandshakingRejected: complete() Err
+    Established --> Closed: close()
+    Closed --> [*]
+
+    Idle --> WireFault: bus.try_recv() corrupt
+    Handshaking --> WireFault: bus.try_recv() corrupt
+
+    state IdleRejected: Result.Err(ProtocolViolation)<br/>consumed, no phase advance (ISC-23)
+    state HandshakingRejected: Result.Err(ProtocolViolation)<br/>consumed, no phase advance (ISC-23)
+    state WireFault: Result.Err(MalformedMessage)<br/>decode fails before any phase method runs (ISC-24)
+```
+
+*The real `IdleSession → HandshakingSession → EstablishedSession → ClosedSession`
+phase machine plus its two fault-injected error edges — dropped frames
+surface as `ProtocolViolation` at the session-method boundary, corrupted
+frames surface as `MalformedMessage` at the wire-decode boundary, and
+neither ever crashes or silently advances the phase (@sec:results-discussion,
+"Fault-injected protocol negative controls").*
+
+## Affine-discipline resource handles
+
+
+
+::: {.theorem-box .definition}
+**Definition 1** (Affine-discipline resource handle). An \emph{affine-discipline handle} is an object that (i) is immutable after construction
+(\texttt{frozen=True}, \texttt{\_\_slots\_\_}-restricted, no public mutator), (ii) carries a private
+consumed flag set exactly once by its first consuming call, and (iii) raises a dedicated exception
+on every subsequent consuming call rather than silently re-executing or returning stale state.
+\texttt{TransactionHandle} (\texttt{storage/transaction.py}) and every protocol-phase class
+(\texttt{protocol/session.py}) satisfy this definition, checked at runtime, not at edit time.
+:::
+
+
+
+`src/template_formal/storage/transaction.py`'s `TransactionHandle` and the
+protocol-phase classes above are what this paper calls
+**affine-discipline** handles per the definition above: frozen, `__slots__`-restricted objects
+carrying a private consumed flag, checked and raised
+(`ConsumedHandleError`/`SessionConsumedError`) on every consuming method
+call. The term is chosen deliberately over describing Python's guarantee
+here as compiler-enforced structural linearity of the kind @jung2018rustbelt
+formalize for Rust's ownership/borrowing system: Rust's borrow checker
+rejects a double-move or a use-after-move **at compile time**, as a type
+error; Python's runtime here rejects a double-commit **at runtime**, as a
+raised exception, one call after the type checker has already let the
+program through. Both defend the same invariant — a resource is consumed
+at most once — but by different mechanisms, and this paper is careful
+never to claim Python achieves the compile-time version.
+
+## What mypy --strict proves vs. what is a runtime discipline {#sec:honesty-line}
+
+This section states, claim by claim, exactly which invariants above are
+edit-time/CI-time type-checker guarantees and which are runtime-checked
+disciplines — and cites the ISC (Ideal-State Criterion) number of the test
+that would fail if the claim were false.
+
+
+
+::: {.theorem-box .proposition}
+**Proposition 2** (Static type-safety guarantees, edit-time/CI-time only). Each of the following is rejected by \texttt{mypy --strict} before the program ever runs, and each
+rejection is exercised by a real \texttt{mypy --strict} subprocess invocation over a negative-control
+fixture (never a hand-inspected signature): nominal identifier confusion (\texttt{AgentId} for
+\texttt{MessageId}), a non-exhaustive \texttt{match} over \texttt{Result}, a phase-inappropriate method
+call on a session-typed handle, an out-of-\texttt{Literal} isolation level, an \texttt{Agent}
+constructed from a bare \texttt{str}/\texttt{UUID}, and a structurally-nonconforming
+\texttt{PheromoneField}. See the itemized list below for the exact fixture and ISC bound to each claim.
+:::
+
+
+
+**Proved by mypy --strict (edit-time/CI-time only):**
+
+- An `AgentId` cannot be passed where a `MessageId` is expected
+  (ISC-2, `tests/mypy_fixtures/bad_id_mixing.py`).
+- A `match` over `Result` that omits the `Err` arm is rejected via
+  `assert_never` in the `Ok`-only branch (ISC-4,
+  `tests/mypy_fixtures/bad_result_nonexhaustive.py`).
+- An `Established`-only method cannot be called on an `Idle`-phase handle
+  (ISC-18, `tests/mypy_fixtures/bad_phase_transition.py`).
+- A `TransactionHandle`'s isolation level cannot be constructed from an
+  arbitrary string outside `Literal["deferred", "immediate", "exclusive"]`
+  (ISC-15, `tests/mypy_fixtures/bad_isolation_level.py`).
+- An `Agent` cannot be constructed from a bare `str`/`UUID` in place of an
+  `AgentId` (ISC-31, `tests/mypy_fixtures/bad_agent_id_construction.py`).
+- An object that almost, but not quite, structurally conforms to the
+  `PheromoneField` `Protocol` — `deposit` requiring an extra argument
+  beyond `(location, amount)` — cannot be assigned to a `PheromoneField`-typed
+  variable (ISC-32, `tests/mypy_fixtures/bad_pheromone_protocol_violation.py`).
+- All six fixtures above are run as real `mypy --strict` **subprocess**
+  invocations (never a hand-inspected type signature) by
+  `tests/test_mypy_oracle.py`, which additionally asserts a **zero** exit
+  code against the real `src/` tree (ISC-37, ISC-38, ISC-39) — proof the
+  main code is actually clean, not merely that the fixtures are broken.
+  Three more fixtures are **positive** controls, each guarding a generic-API
+  or structural-conformance surface `src/`-only type-checking cannot see
+  because `src/` itself never instantiates that surface with a concrete
+  type argument: `good_agent_belief_instantiation.py` asserts
+  `Agent[BeliefState]` (the template's own flagship generic instantiation)
+  type-checks cleanly — it exists because an earlier revision of
+  `GaussianBelief` declared its `mean`/`variance` members as plain mutable
+  attributes rather than read-only `@property` members, which a
+  `frozen=True` dataclass can never satisfy, and a cross-vendor audit
+  caught the break (see ISA.md Changelog); `good_bus_wire_message_instantiation.py`
+  asserts `InProcessBus[WireMessage]` binds and type-checks cleanly
+  (ISC-20/26); and `good_pheromone_conformance.py` is the paired positive
+  control proving `InMemoryPheromoneField` actually does satisfy
+  `PheromoneField` (ISC-32), so the negative control above is shown to
+  reject a genuinely broken conformance, not an unsatisfiable one.
+
+
+
+::: {.theorem-box .proposition}
+**Proposition 3** (Runtime-only disciplines, not type-checker guarantees). None of the following is ill-typed under \texttt{mypy --strict}: each is instead caught only at
+runtime, by an explicit consumed-flag check or an explicit wire-decode validation, and each is
+exercised by a real fault-injected test (a seeded, reproducible fault sequence through the in-process
+bus, never a fault-free-only happy path). This is the affine-discipline handle of the definition
+above paying off dynamically where Python's static type system structurally cannot.
+:::
+
+
+
+**Runtime disciplines only — not type-checker guarantees:**
+
+- Reusing a consumed `TransactionHandle` (calling `.commit()` twice, or
+  after `.rollback()`) is not ill-typed; it is caught by a runtime
+  `_consumed` flag and raises `ConsumedHandleError` (ISC-12, ISC-13).
+- Reusing a consumed protocol-phase instance (calling `.open()` twice on
+  the same `IdleSession` without reassignment) is not ill-typed either; a
+  runtime consumed-flag check raises `SessionConsumedError` (ISC-19),
+  pairing this dynamic proof with the static proof of ISC-18 above.
+- Malformed bytes arriving at a real, untyped network boundary — the wire
+  format `encode_wire_message`/`decode_wire_message` round-trips through
+  real `bytes`, not passed-by-reference Python objects (ISC-26) — are
+  detected only at runtime, returning a typed `Result.Err(MalformedMessage(...))`
+  (ISC-24), never a compile-time guarantee, because no static type system
+  can characterize the well-formedness of bytes received from outside the
+  type-checked program.
+- Every one of the above runtime disciplines is exercised by a real
+  fault-injected test through the in-process bus (`network/bus.py`), with
+  a seeded, reproducible fault sequence (ISC-22) and no test that exercises
+  only the fault-free happy path without a paired negative control
+  (ISC-25 anti).
+
+**What this section explicitly does not claim:** no sentence in this
+manuscript, and no docstring in `src/template_formal/`, asserts that
+Python's type system enforces resource-affine or resource-structural-linear
+discipline at compile time, or that it performs the kind of type-level
+proof-obligation checking a proof assistant's value-indexed type theory
+performs. Affine-discipline handles here are runtime-guarded, full stop; a
+grep for the two named classes of compile-time guarantee this paragraph
+deliberately does not use, run against this manuscript, returns zero
+matches (ISC-44) — there is no limitations subsection that needs the
+exemption, because the template makes neither claim anywhere to
+begin with.
+
+
+
+---
+
+
+
+# Storage as a Functor {#sec:storage-functor}
+
+## The framing
+
+
+
+::: {.theorem-box .definition}
+**Definition 4** (Schema-as-category design lens). A \emph{schema category} has one object per table and one morphism per foreign key. A
+\emph{schema-conforming instance} is a functor from the schema category into \(\mathbf{Set}\),
+sending each table object to the set of its rows and each foreign-key morphism to the corresponding
+function between row-sets. This template uses the term as a design lens (below), not as a
+mechanically checked property.
+:::
+
+
+
+`src/template_formal/storage/schema.py` documents the agent-local SQLite
+schema as an instance of Fong and Spivak's functorial view of databases
+(@fong2018seven; see also the Ologs framework of @spivak2012ologs) per the
+definition above. `Column` and `TableSchema` — the
+typed dataclasses this module defines — play the role of that schema
+category's objects: a `Column` is a typed field of a table, and a
+`TableSchema` is a table's full column list plus the SQL DDL it compiles
+to, generated programmatically rather than hand-written at each call site
+(ISC-9).
+
+## What this framing is, and is not
+
+This is stated here exactly as it is stated in the source docstring: a
+*design lens*, not a load-bearing mathematical claim. Nothing in
+`storage/schema.py`, `storage/db.py`, or their tests checks the actual
+category-theoretic functoriality laws — identity-preservation and
+composition-preservation — against this schema. A forker who wanted that
+stronger guarantee would need a genuine categorical-database library (or a
+proof assistant encoding) checking those laws against the schema's foreign
+keys; this template does not attempt that, and does not claim to. The
+value the framing does deliver, honestly: it gives the typed query builder
+(`storage/db.py`'s `QueryBuilder[RowT]`, generic over the row type) a
+principled vocabulary for what a "row set" and a "schema" are, and it makes
+explicit that a schema *is* structured data with morphisms between its
+parts — a genuinely useful design lens for reasoning about foreign-key
+integrity — without over-promising a machine-checked proof the codebase
+does not deliver.
+
+## Affine-discipline transactions over that instance
+
+Every write to an agent's schema-instance goes through exactly one
+`TransactionHandle` per transaction (`storage/transaction.py`), consumed at
+most once (@sec:honesty-line). A real on-disk SQLite file
+(`tmp_path`-backed, never `:memory:`-only, per ISC-66) is used in every test
+that makes a durability claim, including the rollback test that asserts —
+via a real `SELECT`, not an assumption — that a rolled-back transaction
+leaves the database in its exact pre-transaction state (ISC-14). The typed
+query builder never raises for an *expected* failure mode (a missing row,
+a constraint violation); those come back as `Result.Err(StorageError(...))`
+(ISC-10), keeping expected failure on the ADT side of the line drawn in
+@sec:honesty-line and reserving raised exceptions for genuine programmer
+errors such as affine-handle reuse.
+
+## Per-agent isolation
+
+Per the ISA's decentralization framing (`Out of Scope`: "independent local
+DB ... per agent, no shared global state"), each `Agent`
+(`src/template_formal/agent/agent.py`) opens its own `Database` at
+construction time and never exposes it — there is no public attribute or
+method on `Agent` that returns a `Path`, `sqlite3.Connection`, or
+`Database`, and none that accepts one either. `tests/agent/test_agent_isolation.py`
+confirms this structurally (ISC-30): a second agent's storage file path is
+unreachable through the first agent's public API, not merely unreached in
+the tests that happen to exist.
+
+
+
+---
+
+
+
+# The Active Inference Framing of the Decision Loop {#sec:active-inference}
+
+## The decision loop
+
+`src/template_formal/agent/agent.py`'s `Agent.decide` scores each candidate
+action by a closed-form quantity, formalized here once and cited by number
+everywhere else in this manuscript that uses it:
+
+
+
+::: {.theorem-box .definition}
+**Definition 5** (Expected free energy of a candidate action). For a scalar Gaussian belief \(Q(o \mid \text{action}) = \mathcal{N}(\mu_q, \sigma_q^2)\) about the
+outcome a candidate action would produce, and a fixed Gaussian preference \(P(o) = \mathcal{N}(\mu_p,
+\sigma_p^2)\), subject to \(\sigma_q^2 > 0\) and \(\sigma_p^2 > 0\) (enforced at construction by
+\texttt{BeliefState.\_\_post\_init\_\_}, ISC-81), the \emph{expected free energy} of the action is
+the sum of a KL-divergence risk term and a differential-entropy ambiguity term over \(Q\), given in
+\cref{eq:expected-free-energy}. \texttt{Agent.decide} selects the candidate action minimizing this
+quantity.
+:::
+
+
+
+$$
+G(\text{action}) = \mathrm{KL}\!\left[Q(o \mid \text{action}) \,\|\, P(o)\right] + \mathrm{H}\!\left[Q(o \mid \text{action})\right]
+$$ {#eq:expected-free-energy}
+
+Both terms of @eq:expected-free-energy are ordinary, exactly-computable
+closed forms — the univariate Gaussian KL-divergence and the univariate
+Gaussian differential entropy — and `tests/agent/test_agent_free_energy.py`
+checks the implementation against a hand-derived numeric expectation
+(ISC-29), not merely a "runs without error" smoke assertion.
+
+A third adversarial pass (FirstPrinciples and an independent security
+review, converging on the same finding without coordinating) caught a real
+gap here: `BeliefState.variance` — the divisor in @eq:expected-free-energy's
+KL term and the argument to $\log$ in its entropy term — carried no
+validation, so
+`BeliefState(mean=0.0, variance=0.0)` constructed silently and only failed
+three calls later with an undocumented `ZeroDivisionError`. `BeliefState`
+now validates `variance` (finite, `> 0.0`) at construction (ISC-81),
+mirroring the same construction-time-guard pattern the storage layer's SQL
+identifiers and the colony harness's `decay`/`sensing_noise_std` already
+use. `tests/agent/test_agent_free_energy.py` proves the fix is load-bearing:
+the `ValueError` now fires at `BeliefState.__init__`, not deep inside $G$'s
+computation.
+
+## What this borrows from Friston (2005), and what it does not
+
+The general framing — that adaptive behavior can be cast as approximate
+minimization of a variational free energy over beliefs about hidden or
+observed states — traces to @friston2005theory, "A Theory of Cortical
+Responses." That paper establishes the free-energy principle for
+perception; it does not itself present the risk/ambiguity decomposition of
+*expected* free energy used above, which was formalized in later
+active-inference literature building on it. This template borrows only the
+general framing — behavior as free-energy minimization over a belief
+distribution — and states the borrowed formula explicitly in the source
+docstring rather than presenting it as a verbatim reproduction of
+Friston's 2005 equations. What a research-grade active-inference
+implementation would additionally require — hierarchical generative
+models, policy-conditioned rollouts over multi-step futures,
+precision-weighting of prediction errors, and message-passing (variational)
+inference over a structured generative model — is out of scope for this
+template and is not claimed to be present.
+
+## From individual free-energy minimization to collective organization
+
+The colony's convergence behavior (@sec:results-discussion; not claimed as
+emergence in the stronger sense there defined) is not produced by
+any single agent's free-energy calculation; it is produced by many agents
+independently minimizing $G$ against a **shared, environment-mediated**
+substrate — the pheromone field (`src/template_formal/colony/pheromone.py`).
+This is exactly the bridge Ehresmann and Vanbremeersch's Memory Evolutive
+Systems framework (@ehresmann2007memory) is built to describe: a
+hierarchy in which lower-level components (individual agents, each running
+its own local free-energy minimization) interact through a shared
+structure to produce higher-level, emergent organizational patterns,
+formalized category-theoretically as colimits over evolving diagrams of
+interacting sub-systems. This template does not implement or check
+Ehresmann and Vanbremeersch's formal colimit construction — the connection
+drawn here is, like @sec:storage-functor's functorial framing, a
+conceptual bridge from an individual-level computational mechanism
+(expected-free-energy minimization) to a collective-level phenomenon
+(stigmergic convergence), not a claim that this template's code
+constitutes a formal Memory Evolutive System.
+
+## Structural boundary the decision loop respects
+
+`Agent.decide` and `Agent.record_observation` never read or write another
+agent's storage file; the type system and the `Agent` class's public
+surface make this structurally true rather than merely conventionally true
+(ISC-30, @sec:storage-functor). The colony coordinator that drives many
+agents through repeated ticks holds references only to each agent's public
+interface and to the shared `PheromoneField` `Protocol` — never to an
+agent's internal `Database` or protocol `SessionEndpoint` (ISC-34). This
+keeps the "many local free-energy minimizers coordinating through a shared
+environment, with no shared internal state" framing honest at the code
+level, not just at the level of the manuscript's prose.
+
+
+
+---
+
+
+
 # Results and Discussion {#sec:results-discussion}
 
 ## mypy-as-oracle proof-of-detection
@@ -102,7 +695,7 @@ fact item 4 above states in prose. Bottom: `north`'s share of total
 concentration, constant at $1.0$ from tick 0 because *every* agent resolves
 the identical free-energy tie to `north` on the very first tick (item 1
 above) — this is the mechanism-demonstration run, presented honestly as
-"guaranteed by construction," not as emergence.](../output/figures/colony_demo_convergence.png){#fig:demo-convergence}
+"guaranteed by construction," not as emergence.](../figures/colony_demo_convergence.png){#fig:demo-convergence}
 
 What this test demonstrates is a genuine, correctly-wired positive-feedback
 mechanism operating on real per-agent state — the scaffolding a claim about
@@ -239,7 +832,7 @@ mean. Right: the same distribution as an empirical CDF. This demo figure
 is illustrative of the *shape* of the real distribution at a smaller,
 faster $N$ — the $N=150$ Wilson-interval numbers quoted above, not this
 $N=40$ run, are what the paper's statistical claim is
-bound to.](../output/figures/colony_convergence_tick_distribution.png){#fig:convergence-tick-distribution}
+bound to.](../figures/colony_convergence_tick_distribution.png){#fig:convergence-tick-distribution}
 
 A companion test
 (`test_colony_coordinator_never_touches_an_agents_internal_storage_or_protocol_handle`)
@@ -856,8 +1449,10 @@ the Python code in `src/`.
 
 ## Formal side-spec expansion: what grew, and what still needs wiring
 
-\begin{theorem}[Mechanically verified protocol invariants]
-Three claims about the handshake protocol's \emph{design} (not this template's Python
+
+
+::: {.theorem-box .theorem}
+**Theorem 6** (Mechanically verified protocol invariants). Three claims about the handshake protocol's \emph{design} (not this template's Python
 implementation, per the scoping note above) are machine-checked, zero-\texttt{sorry}, zero-extra-axiom
 results, re-verified end to end by \texttt{scripts/check\_formal\_specs.sh}: (i)
 \texttt{step\_to\_closed\_cases} (Lean 4) — every transition into the \texttt{closed} phase originates
@@ -868,7 +1463,9 @@ consumed session token has an unsatisfiable precondition; (iii) \texttt{NoFalseE
 genuinely \emph{sent} the corresponding real message at some point (\emph{send-provenance}), checked
 over 494 generated / 92 distinct states under arbitrary drop/corrupt/duplicate fault interleaving, and
 independently proven non-vacuous by a permanent negative control (below) rather than merely asserted.
-\end{theorem}
+:::
+
+
 
 Both formal side-specs grew since the "shipped, not cut" decision above was
 first recorded, and both expansions were re-verified as real, runnable
@@ -1023,3 +1620,20 @@ gap, and the zero-deposit ablation are each only established at
 other seed bases; the real-vs-null gap and the zero-deposit ablation do
 not, and neither is gated by a cross-seed-base regression test the way the
 heterogeneity ordering is).
+
+
+
+---
+
+
+
+# References {#sec:references}
+
+Bibliography lives in [`manuscript/references.bib`](references.bib) and is read by Pandoc during PDF render. The build pipeline invokes Pandoc with `--natbib`, so every `[@key]` citation in the manuscript is rewritten to the appropriate `\cite{}`/`\citep{}`/`\citet{}` LaTeX command and resolved against the bib file.
+
+To validate that `references.bib` is syntactically clean and contains the required fields per entry type:
+
+```bash
+uv run python -m infrastructure.reference.citation.cli validate \
+    projects/templates/template_formal/manuscript/references.bib --strict
+```
