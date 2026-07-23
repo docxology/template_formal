@@ -1,6 +1,6 @@
 # `tests/` — test suite map
 
-277 tests, mirroring `src/template_formal/`'s subpackage layout one-for-one.
+278 tests, mirroring `src/template_formal/`'s subpackage layout one-for-one.
 No mocks anywhere — every test uses a real SQLite file (or the one documented
 `:memory:` test-only escape hatch), a real `mypy --strict` subprocess, real
 `matplotlib` rendering, or hand-derived arithmetic.
@@ -8,7 +8,7 @@ No mocks anywhere — every test uses a real SQLite file (or the one documented
 | Directory / file | What it tests |
 | --- | --- |
 | [`agent/`](agent/) | `Agent[StateT]` — hand-computed expected-free-energy numerics (`test_agent_free_energy.py`), structural proof that one agent's SQLite file is unreachable via another agent's public API (`test_agent_isolation.py`), and storage/tick/protocol-endpoint behavior (`test_agent_lifecycle.py`). |
-| [`colony/`](colony/) | The multi-agent coordination layer: pheromone-field Protocol conformance (`test_pheromone.py`), the fixed-symmetric-config emergent-convergence demo (`test_colony_integration.py`), pure-function unit tests for `stats.py`/`find_sustained_consensus_tick` (`test_colony_stats_unit.py`), `ColonyTrialConfig.__post_init__` runtime guards (`test_colony_experiment_config.py`), the N=150 statistical-rigor claim plus its wall-clock benchmark (`test_colony_convergence_statistics.py`), the random-choice null-model baseline's determinism and structural isolation (`test_nullmodel.py`), the generic parameter-sweep runner (`test_sweep.py`), eight pre-registered analyses grouped across three experiment families (`test_colony_experiments_extended.py`), and the demo/visualization runners (`test_demo.py`, `test_visualization.py`). |
+| [`colony/`](colony/) | The multi-agent coordination layer: pheromone-field Protocol conformance (`test_pheromone.py`), the fixed-symmetric-config emergent-convergence demo (`test_colony_integration.py`), pure-function unit tests for `stats.py`/`find_sustained_consensus_tick` (`test_colony_stats_unit.py`), `ColonyTrialConfig.__post_init__` runtime guards (`test_colony_experiment_config.py`), the N=150 statistical-rigor claim plus its process-CPU benchmark (`test_colony_convergence_statistics.py`), the random-choice null-model baseline's determinism and structural isolation (`test_nullmodel.py`), the generic parameter-sweep runner (`test_sweep.py`), eight pre-registered analyses grouped across three experiment families (`test_colony_experiments_extended.py`), and the demo/visualization runners (`test_demo.py`, `test_visualization.py`). |
 | [`network/`](network/) | The in-process fault-injectable bus (`test_bus.py`: seeded determinism, each fault mode actually firing) and an end-to-end handshake driven through it (`test_handshake_over_bus.py`). |
 | [`protocol/`](protocol/) | The session-typed state machine and its wire codec (`test_session.py`). |
 | [`storage/`](storage/) | Schema-to-DDL generation (`test_storage_schema.py`), the real on-disk `QueryBuilder` (`test_storage_db.py`), and the affine-discipline `TransactionHandle` (`test_storage_transaction.py`). |
@@ -39,7 +39,7 @@ in this project:
 ## Coverage gate
 
 90% floor (`pyproject.toml`'s `[tool.coverage.report] fail_under = 90`),
-currently **96.03%** measured this session via:
+currently **95.91%** measured this session via:
 
 ```bash
 uv run pytest tests -q --cov=src/template_formal --cov-report=term-missing
@@ -78,29 +78,23 @@ get it parametrized into the suite:
 
 `pytest-xdist>=3.6.0` is a real `[project.optional-dependencies] dev` entry
 in `pyproject.toml`. `uv run pytest tests -n auto` and `-n 4` both run to
-completion and (usually) pass all 277 tests — verified this session. Be
+completion and pass all 278 tests after the source-boundary correction. Be
 skeptical of any claim that `-n auto`/`-n 4` make the *full* suite faster
 here: they don't, and they introduce a real flakiness risk. Measured this
 session, on this machine:
 
 | Invocation | Wall clock | Result |
 | --- | --- | --- |
-| `pytest tests` (serial) | machine-dependent | 277 passed in the current full run |
-| `pytest tests -n auto` (14 workers) | machine-dependent | Re-run serially if a wall-clock assertion trips under CPU contention |
+| `pytest tests` (serial) | machine-dependent | 278 tests exercised in the current full run |
+| `pytest tests -n auto` (14 workers) | machine-dependent | Re-run serially if a timing-sensitive assertion trips under CPU contention |
 | `pytest tests -n 4` | machine-dependent | Use only when overlapping the two heavy experiment modules is worth the worker overhead |
 
-The single failure observed under `-n auto` was
-`test_colony_convergence_statistics.py::test_wall_clock_benchmark_stays_within_budget`
-tripping its own internal budget (it measured 45.62s against a 45.0s ceiling)
-— not a real regression, but real CPU contention from 14 concurrent workers
-each running a chunk of the N=150 trial batch on the same machine at once.
-Re-running the identical `-n auto` invocation immediately after passed
-cleanly. This is the same class of nondeterministic wall-clock-under-load
-flake documented for the repo's infra suite (see root `CLAUDE.md`'s note on
-`-n auto` tripping LaTeX/subprocess timeouts on loaded machines) — it is not
-specific to this project, and it is not a reason to avoid `-n auto`/`-n 4`
-outright, but it does mean a red run of the full suite under either flag
-should be re-run serially before treating it as a real failure.
+The former wall-clock benchmark once tripped at 45.62s against a 45.0s
+ceiling under `-n auto` CPU contention. It now measures process CPU time and
+retains a generous budget, so scheduler delay from unrelated workloads cannot
+turn a healthy deterministic batch into a failure. A red run under either
+parallel mode should still be re-run serially before treating it as a real
+regression, because xdist can expose other resource-sensitive tests.
 
 **Why xdist doesn't help here**: four large, module-scoped, sequential
 real-trial batches dominate the suite's wall clock —
@@ -131,4 +125,4 @@ these two files.
   serial, or a small worker count if you specifically want to overlap the two
   heavy files with the rest of the suite. Do not assume `-n auto` is faster
   for the full suite on every machine — on this one, it measured slower than
-  serial and once flaked on the wall-clock gate.
+  serial; the convergence gate itself is now scheduler-resistant.

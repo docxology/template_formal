@@ -1,6 +1,6 @@
 # `tests/` — Agent Guide
 
-277 tests, one subdirectory per `src/template_formal/` subpackage. See
+278 tests, one subdirectory per `src/template_formal/` subpackage. See
 [`README.md`](README.md) for the full directory-to-responsibility map, the
 mypy-oracle harness mechanics, and measured xdist timing.
 
@@ -29,7 +29,8 @@ mypy-oracle harness mechanics, and measured xdist timing.
   `pytest-xdist` — xdist parallelizes across test functions, not iterations
   inside one, so it cannot split these; see `README.md`'s xdist section for
   the actual measured numbers (not a projected/assumed speedup) and the one
-  observed CPU-contention flake on `test_wall_clock_benchmark_stays_within_budget`.
+  observed CPU-contention flake on the former wall-clock benchmark; the gate
+  now measures process CPU time so scheduler contention is not a false failure.
 - **A red run under `-n auto`/`-n 4` is not automatically a real failure.**
   Re-run serially before escalating — see `README.md` for why.
 

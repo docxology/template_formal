@@ -28,6 +28,8 @@ publication:
   version_doi: "10.5281/zenodo.21298886"
   version_record: "https://zenodo.org/records/21298886"
   github_repository: "docxology/template_formal"
+  repository_url: "https://github.com/docxology/template_formal"
+  repository_label: "docxology/template_formal"
   transmission_bookends:
     enabled: false
     max_prior_releases: 5
@@ -77,6 +79,13 @@ render:
     slides: true
     docx: false
     epub: false
+
+# Analysis scripts — only the actual analysis script runs in Stage 02.
+# 00_setup_environment.py is a preflight check, not an analysis script.
+analysis:
+  scripts:
+    - 02_run_analysis.py
+    - zz_generate_cover_art.py
 
 # Consumed by: `infrastructure.llm.LLMClient` (in `infrastructure/llm/core/client.py`)
 llm:

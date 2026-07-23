@@ -90,7 +90,7 @@ flowchart TB
     P --> M[manuscript]
     P --> PY[pyproject.toml<br/>Pytest/coverage/mypy config]
 
-    SRC --> SRC_F[types/ids.py · types/result.py · types/phase.py ·<br/>storage/schema.py · storage/db.py · storage/transaction.py ·<br/>protocol/session.py · protocol/errors.py · network/bus.py ·<br/>agent/agent.py · colony/pheromone.py · colony/experiment.py ·<br/>colony/stats.py · colony/nullmodel.py · colony/sweep.py ·<br/>colony/demo.py · colony/visualization.py]
+    SRC --> SRC_F[types/ids.py · types/result.py · types/phase.py ·<br/>storage/schema.py · storage/db.py · storage/transaction.py ·<br/>protocol/session.py · protocol/errors.py · network/bus.py ·<br/>agent/agent.py · colony/pheromone.py · colony/experiment.py ·<br/>colony/stats.py · colony/nullmodel.py · colony/sweep.py ·<br/>colony/demo.py · colony/visualization.py · colony/analysis.py]
     SC --> SC_F[00_setup_environment.py · 02_run_analysis.py]
     T --> T_F[mypy_fixtures/ · storage/ · protocol/ · network/ · agent/ · colony/ ·<br/>test_mypy_oracle.py · test_types_ids.py · test_types_result.py]
     M --> M_F[00_abstract → 05_results_discussion.md ·<br/>config.yaml · config.yaml.example ·<br/>preamble.md · references.bib]
@@ -114,7 +114,7 @@ isolated runs of this tree.
 
 ```bash
 # From the repository root — run the demo colony pipeline
-uv run python projects/templates/template_formal/scripts/02_run_analysis.py
+uv run python projects/templates/template_formal/scripts/pipeline/stage_02_analysis.py
 
 # Run tests with coverage
 uv run pytest projects/templates/template_formal/tests/ --cov=projects/templates/template_formal/src --cov-fail-under=90

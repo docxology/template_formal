@@ -1,13 +1,13 @@
 # `tests/colony/` — pheromone substrate, emergent stigmergy, and eight pre-registered analyses
 
 Behavioral and statistical tests for `src/template_formal/colony/{pheromone,
-experiment,nullmodel,sweep,stats,demo,visualization}.py` — the shared
+experiment,nullmodel,sweep,stats,demo,visualization,analysis}.py` — the shared
 `PheromoneField` substrate, the N-agent stigmergic colony mechanism, its
 random-choice null-model control, the generic parameter-sweep runner, and
 the pure statistics helpers (Wilson score interval, Fisher's exact test,
 Pearson r) that back every convergence-rate claim in the manuscript.
 
-**This directory is not uniformly fast.** Eight of the ten files are quick
+**This directory is not uniformly fast.** Nine of the eleven files are quick
 unit/small-integration tests; **two are large, real experiment-sweep files
 that run hundreds of real colony trials each and are the slowest tests in
 the whole `template_formal` suite** — see the dedicated section below.
@@ -18,6 +18,7 @@ the whole `template_formal` suite** — see the dedicated section below.
 
 | File | Lines | Covers | What it actually tests |
 | --- | --- | --- | --- |
+| [`test_analysis.py`](test_analysis.py) | 28 | ISC-120 | Runs the source-owned publication analysis against a temporary project root and verifies every returned path is a real non-empty file, the calibrated sweep reproduces 37/40 successes, and the registry binds exactly the two generated figures. |
 | [`test_pheromone.py`](test_pheromone.py) | 50 | ISC-32 | `InMemoryPheromoneField`: sensing an unvisited location returns `0.0`; deposits accumulate across calls; negative deposit amounts raise `ValueError`; `evaporate` scales every location uniformly by a `(1 - decay)` factor; `evaporate` rejects a decay outside `[0.0, 1.0]`; the field's public surface is exactly `{"deposit", "sense", "evaporate"}` — no way to reach the backing dict. |
 | [`test_colony_experiment_config.py`](test_colony_experiment_config.py) | 118 | ISC-80 | `ColonyTrialConfig.__post_init__`'s runtime guards, mirroring the discipline already proven for `storage/schema.py`'s SQL-identifier validation and `storage/transaction.py`'s isolation-`Literal`: `decay` must be a fraction in `[0.0, 1.0]` (boundary values `0.0`/`1.0` accepted); `sensing_noise_std` must be non-negative; `preference_variance` must be strictly `> 0.0` (a cross-vendor audit caught the original guard accepting `0.0`, which then failed downstream inside `BeliefState`'s stricter bound — the same "fails downstream, not at construction" defect class this config's guards exist to close). A final sweep over the full valid range (5 decay values × 3 noise values × 3 variance values) proves no false-positive rejection. |
 | [`test_colony_integration.py`](test_colony_integration.py) | 140 | ISC-33, ISC-34 | Three real `Agent` instances, three real on-disk SQLite files, one shared `InMemoryPheromoneField`, five ticks — the test coordinator itself never picks a winner; it only reads real per-agent `decide()`/`record_observation()` results and a real shared field. Proves five emergent properties from the resulting real data: unanimous first-tick consensus, sustained consensus every subsequent tick, the winning location's real sensed concentration strictly increasing tick-over-tick, the losing location never accumulating anything, and the winner's dominance share being non-decreasing and reaching exactly `1.0`. A second test asserts `Agent`'s and `PheromoneField`'s public surfaces are *exactly* the members this file's own coordinator loop uses — the ISC-34 anti-claim made concrete: the coordinator could not have reached an agent's internal storage or protocol handle even if it tried, because those members don't exist on the public surface at all. |
@@ -36,10 +37,10 @@ real per-agent SQLite files) rather than a handful of fixed-scale
 integration runs. **Flagging this explicitly because it is the direct
 input to the test-parallelization guidance in `../AGENTS.md`.**
 
-| File | Lines | Covers | What it actually tests | Real trial volume | Measured wall-clock (soft budget) |
+| File | Lines | Covers | What it actually tests | Real trial volume | Measured timing / budget |
 | --- | --- | --- | --- | --- | --- |
-| [`test_colony_convergence_statistics.py`](test_colony_convergence_statistics.py) | 220 | statistical convergence-rate claim | A genuine, falsifiable statistical test — not an anecdotal single run — of H0: true colony convergence rate ≤ 0.8, rejected at α=0.05 iff the real Wilson 95% lower bound over N=150 real trials (heterogeneous per-agent preferences, nonzero sensing noise) exceeds 0.8. Three honesty guards back the headline claim: a non-vacuity check that injected preference heterogeneity is actually nonzero and actually varies trial-to-trial; a negative control re-running the *old*, fully-symmetric, zero-noise configuration through this *same* new harness, which must reproduce exact 100% convergence (proving the manuscript's "guaranteed by construction" claim isn't resting on two unrelated code paths); and a positive-control-that-can-fail — a deliberately defeated configuration (near-total pheromone evaporation + noise far exceeding the preference-mean signal) whose Wilson upper bound must land well below 0.5, proving the main `>0.8` gate is not vacuously satisfiable by any configuration regardless of mechanism. A final exploratory (loosely-asserted, not tightly pinned) Pearson correlation between preference spread and consensus tick. | 150 (main) + 20 (negative control) + 50 (positive control) = **220 real trials** | ~9s locally; 45s soft budget |
-| [`test_colony_experiments_extended.py`](test_colony_experiments_extended.py) | eight pre-registered analyses | Eight analyses grouped across three experiment families, each stating its hypothesis and falsification criterion before the result (see `manuscript/05_results_discussion.md`'s "Eight pre-registered analyses" section). The suite covers the decay sweep, real-vs-null comparison, heterogeneity sweep, zero-deposit ablations, sensed-concentration-cap ablation and dose-response, cross-seed replication, and the extreme heterogeneity/null comparison. | 900+ real trials across the gated analyses | machine-dependent |
+| [`test_colony_convergence_statistics.py`](test_colony_convergence_statistics.py) | 220 | statistical convergence-rate claim | A genuine, falsifiable statistical test — not an anecdotal single run — of H0: true colony convergence rate ≤ 0.8, rejected at α=0.05 iff the real Wilson 95% lower bound over N=150 real trials (heterogeneous per-agent preferences, nonzero sensing noise) exceeds 0.8. Three honesty guards back the headline claim: a non-vacuity check that injected preference heterogeneity is actually nonzero and actually varies trial-to-trial; a negative control re-running the *old*, fully-symmetric, zero-noise configuration through this *same* new harness, which must reproduce exact 100% convergence (proving the manuscript's "guaranteed by construction" claim isn't resting on two unrelated code paths); and a positive-control-that-can-fail — a deliberately defeated configuration (near-total pheromone evaporation + noise far exceeding the preference-mean signal) whose Wilson upper bound must land well below 0.5, proving the main `>0.8` gate is not vacuously satisfiable by any configuration regardless of mechanism. A final exploratory (loosely-asserted, not tightly pinned) Pearson correlation between preference spread and consensus tick. | 150 (main) + 20 (negative control) + 50 (positive control) = **220 real trials** | ~9s locally; 45s process-CPU soft budget |
+| [`test_colony_experiments_extended.py`](test_colony_experiments_extended.py) | eight pre-registered analyses | Eight analyses grouped across three experiment families, each stating its hypothesis and falsification criterion before the result (see `manuscript/05_results_discussion.md`'s "Eight pre-registered analyses" section). The suite covers the decay sweep, real-vs-null comparison, heterogeneity sweep, zero-deposit ablations, sensed-concentration-cap ablation and dose-response, cross-seed replication, and the extreme heterogeneity/null comparison. | 900+ real trials across the gated analyses | machine-dependent; wall-clock context is recorded, but performance is gated on process CPU time |
 
 Both files use `scope="module"` pytest fixtures (`main_batch`,
 `decay_sweep_points`, `real_vs_null_results`, `heterogeneity_sweep_results`)
@@ -54,10 +55,11 @@ project's total test wall-clock time, concentrated in three
 `tmp_path_factory`-scoped fixtures that are each independent, CPU-bound,
 and write to disjoint temp subdirectories — a natural fit for `pytest-xdist`
 worker distribution (`-n auto`), but also the two files most likely to
-trip a wall-clock-budget assertion under contention on a loaded machine
-(see the repo-wide gotcha on `-n auto` vs. fixed worker counts on
-resource-constrained dev machines). Both files' budget assertions
-(`_WALL_CLOCK_BUDGET_SECONDS`) are already generous multiples over their
-locally-measured cost specifically to absorb CI/parallel-run variance
-without becoming flaky — see `../AGENTS.md` for how this directory factors
-into the project's overall parallel test-execution guidance.
+experience scheduler-sensitive timing variance under contention on a loaded
+machine (see the repo-wide gotcha on `-n auto` vs. fixed worker counts on
+resource-constrained dev machines). The extended file records both
+wall-clock and process CPU time, but its generous `_CPU_TIME_BUDGET_SECONDS`
+gates on process CPU time so it catches an order-of-magnitude computational
+regression without making a loaded host fail a deterministic experiment — see
+`../AGENTS.md` for how this directory factors into the project's overall
+parallel test-execution guidance.
