@@ -123,8 +123,8 @@ not asserted:
 ## Dependencies
 
 Run `uv sync` at the **repository root** — step 0 before anything below;
-that environment is what CI, `./run.sh`, and every command in Quick Start
-use. [`pyproject.toml`](pyproject.toml) in this directory pins
+that environment is what CI and every command in Quick Start use.
+[`pyproject.toml`](pyproject.toml) in this directory pins
 pytest/coverage/mypy settings (plus `matplotlib` for the optional demo
 figures) for isolated runs of this project's tests.
 

@@ -66,7 +66,7 @@ and non-default**: neither `lake`/`elan` nor a Java runtime is a dependency of
 the core pipeline, `pytest`, or CI's default job matrix. Install them only if
 you want to re-run the formal side yourself:
 
-- **Lean 4 / `lake`**: via [elan](https://github.com/leanprover/elan) — `export PATH="$HOME/.elan/bin:$PATH"`. Pins to `leanprover/lean4:v4.28.0` (`formal/lean/lean-toolchain`); `lake build` will fetch that toolchain on first run if elan is installed.
+- **Lean 4 / `lake`**: via [elan](https://github.com/leanprover/elan) — `export PATH="$HOME/.elan/bin:$PATH"`. Pins to `leanprover/lean4:v4.35.0` (`formal/lean/lean-toolchain`); `lake build` will fetch that toolchain on first run if elan is installed.
 - **Java runtime for TLC**: any recent JDK (e.g. `/opt/homebrew/opt/openjdk@17/bin/java` on macOS via Homebrew); override the binary path with `FORMAL_JAVA_BIN` if it isn't on `PATH`.
 
 ## See also

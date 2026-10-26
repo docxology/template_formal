@@ -23,7 +23,7 @@ edit-time/CI-time only, same as everywhere else in this template (see
 
 from __future__ import annotations
 
-from typing import Dict, Protocol
+from typing import Protocol
 
 
 class PheromoneField(Protocol):
@@ -62,7 +62,7 @@ class InMemoryPheromoneField:
     __slots__ = ("_concentrations",)
 
     def __init__(self) -> None:
-        self._concentrations: Dict[str, float] = {}
+        self._concentrations: dict[str, float] = {}
 
     def deposit(self, location: str, amount: float) -> None:
         if amount < 0.0:

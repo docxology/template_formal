@@ -119,8 +119,11 @@ uv run python projects/templates/template_formal/scripts/02_run_analysis.py
 # Run tests with coverage
 uv run pytest projects/templates/template_formal/tests/ --cov=projects/templates/template_formal/src --cov-fail-under=90
 
-# mypy --strict oracle
-uv run mypy --strict projects/templates/template_formal/src
+# mypy --strict oracle (the MYPYPATH/explicit-package-bases form is the one
+# that actually gates this project — see README.md "Prerequisites & verification")
+MYPYPATH=projects/templates/template_formal/src \
+  uv run mypy --strict --explicit-package-bases --namespace-packages \
+  projects/templates/template_formal/src
 ```
 
 ## Adding a mypy-oracle fixture
