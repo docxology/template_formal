@@ -2,11 +2,11 @@
 
 **This is an active project** in the `projects/` directory, discovered and
 executed by infrastructure discovery functions. Public exemplar roster and
-comparison: [`projects/AGENTS.md`](../../AGENTS.md#permanent-canonical-exemplars).
-Manuscript semantics: [`docs/guides/manuscript-semantics.md`](../../../docs/guides/manuscript-semantics.md).
+comparison: [`projects/AGENTS.md`](https://github.com/docxology/template/blob/main/projects/AGENTS.md#permanent-canonical-exemplars).
+Manuscript semantics: [`docs/guides/manuscript-semantics.md`](https://github.com/docxology/template/blob/main/docs/guides/manuscript-semantics.md).
 
 Decision memory and verifier hardening follow
-[`docs/rules/memory_and_decision_records.md`](../../../docs/rules/memory_and_decision_records.md):
+[`docs/rules/memory_and_decision_records.md`](https://github.com/docxology/template/blob/main/docs/rules/memory_and_decision_records.md):
 use nearby `WHY:` comments only for surprising local choices, keep volatile
 counts generated, and add negative controls for verifier-like gates.
 
@@ -106,7 +106,7 @@ flowchart TB
 ## Installation/Setup
 
 Install dependencies from the **repository root** with `uv sync` (see root
-[`pyproject.toml`](../../../pyproject.toml)). `template_formal/pyproject.toml`
+[`pyproject.toml`](https://github.com/docxology/template/blob/main/pyproject.toml)). `template_formal/pyproject.toml`
 pins pytest/coverage/mypy settings and documents the project name for
 isolated runs of this tree.
 
@@ -213,6 +213,6 @@ See [README.md](README.md) for the project overview and quick start.
 
 ## See Also
 
-- [Root AGENTS.md](../../AGENTS.md) - Template documentation
-- [`../../AGENTS.md`](../../AGENTS.md#permanent-canonical-exemplars) — public exemplar roster
+- [Root AGENTS.md](https://github.com/docxology/template/blob/main/projects/AGENTS.md) - Template documentation
+- [`../../AGENTS.md`](https://github.com/docxology/template/blob/main/projects/AGENTS.md#permanent-canonical-exemplars) — public exemplar roster
 - [`manuscript/references.bib`](manuscript/references.bib) — full bibliography
