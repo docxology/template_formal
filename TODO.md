@@ -66,3 +66,7 @@ No active rows are currently scoped at this size.
 
 Rows remain active until the acceptance command and negative control pass in the same source revision.
 A blocked row is a deliberate boundary, not a skipped success.
+
+## Workflowz review — 2026-11-10
+
+Coverage note: bounded packet review covered project guidance, README, existing backlog, package/test configuration, and the supplied source excerpts; 4 project files and 11 source files were represented out of 175 total files, with 78 source candidates overall. No concrete correctness, maintainability, documentation, validation, or dead-code improvement with exact packet-visible evidence survived. Intentional mypy fixtures and the explicitly scoped optional-rendering fallback were not promoted to findings from keywords alone. Runtime pins and dependency claims were not changed without contrary constraint evidence. Re-review on a concrete failure or when additional relevant source, caller, CI, or runtime-pin context is available.
