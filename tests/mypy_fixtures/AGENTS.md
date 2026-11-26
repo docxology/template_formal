@@ -3,7 +3,7 @@
 Fixture corpus for the mypy-as-oracle harness ([`../test_mypy_oracle.py`](../test_mypy_oracle.py)).
 Files here are **never imported or executed** — they exist only to be
 handed to `mypy --strict` as a subprocess target. See
-[`README.md`](README.md) for the full fixture-to-ISC table and rationale.
+[`README.md`](../../docs/reference/tests/mypy_fixtures/README.md) for the full fixture-to-ISC table and rationale.
 
 ## Contract
 
@@ -45,5 +45,5 @@ specifically isn't proving anything specifically).
 ## Running just this corpus
 
 ```bash
-uv run pytest projects/templates/template_formal/tests/test_mypy_oracle.py -v
+uv run pytest tests/test_mypy_oracle.py -v
 ```

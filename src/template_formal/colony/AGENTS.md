@@ -49,5 +49,5 @@ wrapper).
   `successes` count in a regression test — see `test_colony_experiments_extended.py`
   for the pattern the pre-registered analyses already follow (ISC-87–ISC-113).
 
-See the project [`AGENTS.md`](../../../AGENTS.md) and [`ISA.md`](../../../ISA.md)
+See the project [`AGENTS.md`](../../../AGENTS.md) and [`docs/ISA.md`](../../../docs/ISA.md)
 for the full map and ISC-1..122 criteria.

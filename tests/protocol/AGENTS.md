@@ -1,7 +1,7 @@
 # `tests/protocol/` — Agent Guide
 
 Tests `src/template_formal/protocol/{session,errors}.py`. See
-[`README.md`](README.md) for the full test breakdown.
+[`README.md`](../../docs/reference/tests/protocol/README.md) for the full test breakdown.
 
 ## Contract
 
@@ -35,5 +35,5 @@ Tests `src/template_formal/protocol/{session,errors}.py`. See
 ## Running just this directory
 
 ```bash
-uv run pytest projects/templates/template_formal/tests/protocol/ -v
+uv run pytest tests/protocol/ -v
 ```

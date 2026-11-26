@@ -13,7 +13,7 @@ these specs — no pipeline stage, pytest fixture, or CI job invokes `lake` or
 isn't exercised by that script (directly, or via a `lakefile.lean`
 dependency/`.cfg` the script already runs), it is exactly the
 vestigial-decoration failure mode `ISC-35`/`ISC-36` were written to catch
-(`ISA.md` `## Decisions`, 2026-07-08: "RedTeam flagged vestigial-decoration
+(`docs/ISA.md` `## Decisions`, 2026-07-08: "RedTeam flagged vestigial-decoration
 risk... ISC-35/36 force an explicit ship-or-cut decision with evidence either
 way"). Wire it in or delete it — there is no third state.
 
@@ -77,7 +77,7 @@ is actually wired into it the same way.
 
 ## See also
 
-- [`README.md`](README.md) — why two formalisms, toolchain install notes
+- [`README.md`](../docs/reference/formal/README.md) — why two formalisms, toolchain install notes
 - [`lean/AGENTS.md`](lean/AGENTS.md) — Lean-specific editing rules, the vacuity trap
 - [`tla/AGENTS.md`](tla/AGENTS.md) — TLA+-specific editing rules, fairness/deadlock conventions
 - [`../AGENTS.md`](../AGENTS.md) — project layer contract

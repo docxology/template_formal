@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
@@ -22,6 +23,9 @@ def main(argv: list[str] | None = None) -> int:
     artifacts = run_publication_analysis(PROJECT_ROOT)
     for path in artifacts.paths:
         print(path)
+    source_figures = PROJECT_ROOT / "docs" / "manuscript" / "figures"
+    for name in ("module_layout.png", "session_phases.png"):
+        print(shutil.copy2(source_figures / name, artifacts.figure_registry.parent / name))
     return 0
 
 

@@ -20,7 +20,7 @@ unrelated error anywhere in the file, the test would keep reporting green
 for the wrong reason — silently no longer proving the specific claim its
 ISC cites. Each substring below was captured by actually running
 `mypy --strict` against that exact fixture and reading its real stdout
-(see ISA.md verification trail); a fixture drifting off its bound claim
+(see docs/ISA.md verification trail); a fixture drifting off its bound claim
 now fails loudly instead of coincidentally passing.
 """
 
@@ -39,7 +39,7 @@ FIXTURES_DIR = PROJECT_ROOT / "tests" / "mypy_fixtures"
 
 # Per-fixture expected error substring, derived by actually running
 # `mypy --strict` against each fixture and reading its real stdout (see the
-# module docstring above and ISA.md's Verification section). Keyed by
+# module docstring above and docs/ISA.md's Verification section). Keyed by
 # filename so a new bad_*.py fixture without an entry here fails loudly
 # (KeyError) rather than silently falling back to a substring-free check.
 _EXPECTED_BAD_FIXTURE_SUBSTRINGS: dict[str, str] = {

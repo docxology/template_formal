@@ -21,6 +21,7 @@ def test_publication_analysis_writes_complete_real_artifact_set(tmp_path: Path) 
     assert len(sweep["consensus_ticks"]) == SWEEP_NUM_TRIALS
 
     registry = json.loads(artifacts.figure_registry.read_text(encoding="utf-8"))
+    assert all(entry["metadata"]["alt_text"].strip() for entry in registry.values())
     assert set(registry) == {"fig:demo-convergence", "fig:convergence-tick-distribution"}
     assert {entry["filename"] for entry in registry.values()} == {
         artifacts.demo_figure.name,

@@ -20,16 +20,16 @@ silently-republished release asset would run unverified).
   `https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar`
   — never `latest`.
 - A hardcoded SHA-256
-  (`TLA_JAR_SHA256="9e27b5e19a69ae1f56aabf8403a6ed5598dbfa6e638908e5278ac39736c1543d"`)
+  (`TLA_JAR_SHA256="67f9575c3b9ef7a0787b1bded34812862ffe79d711298e5a75b1a77720b19928"`)
   is verified via `shasum -a 256 -c -` **every run**, whether the jar was
   just fetched or already cached — so a stale/corrupted/tampered cache is
   caught too, not just a fresh download.
 - On mismatch: `rm -f "${TLA_JAR}"` then `status=1` — the untrusted file is
   never left sitting around for a later invocation to reuse, and the
   script fails loudly rather than silently proceeding.
-- The jar itself is gitignored, not committed — a 2.2MB compiled binary
+- The jar itself is gitignored, not committed — a compiled binary
   has no place in a strongly-typed *source* template (a separate, earlier
-  Forge finding; see `ISA.md`'s Changelog).
+  Forge finding; see `docs/ISA.md`'s Changelog).
 
 ## Construction-time SQL-identifier validation (ISC-70)
 
@@ -68,7 +68,7 @@ before it can reach any raw-SQL f-string (`tests/storage/test_storage_schema.py`
 One documented, non-exploitable residual: `TableSchema.to_ddl`'s DDL
 generation has no guard against a *hypothetical* `object.__setattr__`
 tampering scenario after construction — left as an informational note
-(`ISA.md`'s round-2 audit), since no real code path in this template
+(`docs/ISA.md`'s round-2 audit), since no real code path in this template
 constructs a `TableSchema` from untrusted input.
 
 ## Numeric-boundary consistency: `BeliefState.variance` and `ColonyTrialConfig.preference_variance` (ISC-81/84)
@@ -116,7 +116,7 @@ if self.preference_variance <= 0.0:
     raise ValueError(f"preference_variance must be > 0.0 (matches BeliefState), got {self.preference_variance}")
 ```
 
-**The generalizable lesson** (`ISA.md`'s round-3 Decisions): a
+**The generalizable lesson** (`docs/ISA.md`'s round-3 Decisions): a
 config-level validation fix does not automatically propagate to every
 other constructor of the same underlying value type. Closing a gap at one
 call site is not the same as closing the gap for the type itself — when

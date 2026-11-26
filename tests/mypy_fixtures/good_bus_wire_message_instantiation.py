@@ -8,7 +8,7 @@ positive-control regression guard: `src/` itself never instantiates
 neither of which `tests/test_mypy_oracle.py` type-checks. A `src/`-only
 mypy gate is therefore structurally blind to a broken generic binding
 between `InProcessBus` and its `encode`/`decode` callables (the same class
-of blind spot documented for `Agent[BeliefState]` in ISA.md's Changelog).
+of blind spot documented for `Agent[BeliefState]` in docs/ISA.md's Changelog).
 This fixture is the permanent guard against that blind spot recurring for
 the network-bus module.
 """

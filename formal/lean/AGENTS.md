@@ -70,9 +70,9 @@ is true only because its premise can never hold."
    adding a constructor without revisiting these two theorems will either
    fail to compile (good, loud) or — worse — silently leave a case unproved
    because you didn't re-run `cases` and let Lean tell you what's missing.
-5. Update [`../../manuscript/05_results_discussion.md`](../../manuscript/05_results_discussion.md)
+5. Update [`../../manuscript/05_results_discussion.md`](../../docs/manuscript/05_results_discussion.md)
    (§"The optional formal side-spec: shipped, not cut" / §"Formal side-spec
-   expansion") and [`README.md`](README.md)'s theorem table if the theorem
+   expansion") and [`README.md`](../../docs/reference/formal/lean/README.md)'s theorem table if the theorem
    count or claims change — the manuscript quotes "7 theorems total, zero
    `sorry`, zero extra axioms" as a specific, checkable number.
 
@@ -80,7 +80,7 @@ is true only because its premise can never hold."
 
 ```bash
 export PATH="$HOME/.elan/bin:$PATH"
-cd projects/templates/template_formal/formal/lean
+cd formal/lean
 lake build
 ```
 
@@ -89,6 +89,6 @@ Or via the combined wrapper from the project root:
 
 ## See also
 
-- [`README.md`](README.md) — theorem table, `SessionToken` affine model, zero-sorry discipline
+- [`README.md`](../../docs/reference/formal/lean/README.md) — theorem table, `SessionToken` affine model, zero-sorry discipline
 - [`../AGENTS.md`](../AGENTS.md) — the `formal/` directory's own contract (wiring requirement)
 - [`../../scripts/check_formal_specs.sh`](../../scripts/check_formal_specs.sh)

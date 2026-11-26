@@ -1,7 +1,7 @@
 # `tests/storage/` — Agent Guide
 
 Tests `src/template_formal/storage/{schema,db,transaction}.py`. See
-[`README.md`](README.md) for the per-file test breakdown.
+[`README.md`](../../docs/reference/tests/storage/README.md) for the per-file test breakdown.
 
 ## Contract
 
@@ -15,7 +15,7 @@ Tests `src/template_formal/storage/{schema,db,transaction}.py`. See
   `test_storage_db.py`'s last test) — every other test opens a real file
   via `tmp_path` and asserts against it, because the whole point of this
   module is that per-agent state survives on disk (see Out of Scope in
-  `../../ISA.md`: no `:memory:`-only test-only path may substitute for the
+  `../../docs/ISA.md`: no `:memory:`-only test-only path may substitute for the
   real durability claim).
 - **`QueryBuilder` never raises for expected failure modes.** If you add a
   new expected-failure path (another constraint type, another malformed
@@ -40,5 +40,5 @@ Tests `src/template_formal/storage/{schema,db,transaction}.py`. See
 ## Running just this directory
 
 ```bash
-uv run pytest projects/templates/template_formal/tests/storage/ -v
+uv run pytest tests/storage/ -v
 ```

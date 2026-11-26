@@ -101,7 +101,7 @@ class GaussianBelief(Protocol):
     ``tests/mypy_fixtures/good_agent_belief_instantiation.py``, which
     type-checks ``Agent[BeliefState]`` itself as a mypy-oracle positive
     control (a prior revision of this Protocol used plain attributes and
-    silently failed this exact instantiation; see ISA.md Changelog).
+    silently failed this exact instantiation; see docs/ISA.md Changelog).
     """
 
     @property

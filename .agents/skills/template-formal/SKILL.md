@@ -30,20 +30,9 @@ project.
 
 ## Quick Reference
 
-```bash
-# From the repository root
-uv run pytest projects/templates/template_formal/tests --cov=projects/templates/template_formal/src --cov-fail-under=90
-MYPYPATH=projects/templates/template_formal/src \
-  uv run mypy --strict --explicit-package-bases --namespace-packages \
-  projects/templates/template_formal/src
-uv run python projects/templates/template_formal/scripts/02_run_analysis.py
-uv run python scripts/pipeline/stage_03_render.py --project templates/template_formal
-uv run python scripts/pipeline/stage_04_validate.py --project templates/template_formal
-uv run python scripts/pipeline/stage_05_copy.py --project templates/template_formal
-
-# Optional formal side-specs (non-default; require lake/elan + a Java runtime)
-projects/templates/template_formal/scripts/check_formal_specs.sh
-```
+Follow the [testing guide](../../../docs/testing_guide.md) for the native
+coverage and mypy gate and the [rendering guide](../../../docs/rendering.md)
+for evidence generation, rendering, and validation.
 
 ## Pitfalls
 
@@ -73,5 +62,5 @@ projects/templates/template_formal/scripts/check_formal_specs.sh
 
 - Project contract: [`AGENTS.md`](../../../AGENTS.md)
 - README: [`README.md`](../../../README.md)
-- TODO: [`TODO.md`](../../../TODO.md)
-- Exemplar roster: [`projects/AGENTS.md`](../../../../../AGENTS.md)
+- TODO: [Backlog](../../../docs/backlog.md)
+- Exemplar roster: [`projects/AGENTS.md`](https://github.com/docxology/template/blob/87704feae0a4490ef7dad9c931d268e8c30273c2/projects/AGENTS.md)

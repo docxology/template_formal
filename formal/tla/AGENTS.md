@@ -8,7 +8,7 @@ Parent layer contract: [`../AGENTS.md`](../AGENTS.md).
 missing**, but it verifies the SHA-256 checksum **every single run**,
 fetched-this-time or already-cached — on mismatch it deletes the file and
 fails loudly rather than running an unverified jar. This closed a real
-HIGH-severity finding from a round-2 adversarial pass (`ISA.md` decision log,
+HIGH-severity finding from a round-2 adversarial pass (`docs/ISA.md` decision log,
 2026-07-09): the jar was originally fetched from a `latest`-style moving
 target with zero integrity verification. If you ever change the fetch URL
 (e.g. to bump the pinned TLA+ release), you **must** also update the
@@ -74,14 +74,14 @@ actions the *new* property actually depends on resolving.
    `../../manuscript/05_results_discussion.md` — don't estimate or reuse a
    stale number from a previous run.
 5. If you add a third `.tla` spec, add a corresponding section to
-   [`README.md`](README.md) and wire it into
+   [`README.md`](../../docs/reference/formal/tla/README.md) and wire it into
    `../../scripts/check_formal_specs.sh`'s `status` accumulator (see
    `../AGENTS.md`'s note on extending that script).
 
 ## Run
 
 ```bash
-cd projects/templates/template_formal/formal/tla
+cd formal/tla
 java -jar tla2tools.jar -config AntProtocol.cfg AntProtocol.tla
 java -jar tla2tools.jar -config AntProtocolFaulty.cfg AntProtocolFaulty.tla
 ```
@@ -91,7 +91,7 @@ Or via the combined, checksum-verified wrapper:
 
 ## See also
 
-- [`README.md`](README.md) — what each spec's variables/actions/properties mean
+- [`README.md`](../../docs/reference/formal/tla/README.md) — what each spec's variables/actions/properties mean
 - [`../AGENTS.md`](../AGENTS.md) — the `formal/` directory's wiring requirement
 - [`../lean/AGENTS.md`](../lean/AGENTS.md) — the sibling Lean spec's own editing rules (a useful contrast: kernel-checked proof vs. exhaustive state enumeration)
 - [`../../scripts/check_formal_specs.sh`](../../scripts/check_formal_specs.sh)

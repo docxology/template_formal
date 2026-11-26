@@ -1,6 +1,6 @@
 # `tests/agent/` — Agent Guide
 
-Tests `src/template_formal/agent/agent.py`. See [`README.md`](README.md)
+Tests `src/template_formal/agent/agent.py`. See [`README.md`](../../docs/reference/tests/agent/README.md)
 for the full test breakdown.
 
 ## Contract
@@ -36,5 +36,5 @@ for the full test breakdown.
 ## Running just this directory
 
 ```bash
-uv run pytest projects/templates/template_formal/tests/agent/ -v
+uv run pytest tests/agent/ -v
 ```

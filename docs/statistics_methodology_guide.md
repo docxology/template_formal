@@ -65,7 +65,7 @@ $p=0.1187$, not significant at $\alpha=0.05$. The manuscript relocates the
 decline's evidentiary weight to the shape of a wider, non-regression-gated
 13-point exploratory sweep and cross-seed replication, not to this one
 boundary-adjacent pairwise test — see
-[`manuscript/05_results_discussion.md`](../manuscript/05_results_discussion.md)
+[`docs/manuscript/05_results_discussion.md`](manuscript/05_results_discussion.md)
 for the full, precisely-hedged account. This is the concrete lesson: a
 pairwise comparison touching a `0%`/`100%` boundary needs
 `fisher_exact_test_two_sided`, not a normal-approximation test, exactly as
@@ -267,7 +267,7 @@ separate, still-open confound at the extreme positive-control
 configuration in `test_colony_convergence_statistics.py`. No explicit
 multiple-comparisons correction (Bonferroni/Holm) is applied across either
 sweep's points — justified, not silently omitted (see Experiment D's
-honesty note above and ISC-110 in `ISA.md`).
+honesty note above and ISC-110 in `docs/ISA.md`).
 
 ## Adding a new experiment, following the same discipline
 
@@ -292,7 +292,7 @@ honesty note above and ISC-110 in `ISA.md`).
    normal-approximation test — that is exactly the mistake Experiment A's
    own prose made on its first pass and had to correct.
 5. **State what's *not* shown**, matching the "Honesty hedges" pattern in
-   `manuscript/05_results_discussion.md` — which fixed parameters this
+   `docs/manuscript/05_results_discussion.md` — which fixed parameters this
    experiment doesn't vary, and whether any exploratory (non-regression-gated)
    robustness checks were run at other seed bases.
 6. **If the manuscript quotes a specific number from this experiment
@@ -311,5 +311,5 @@ honesty note above and ISC-110 in `ISA.md`).
    own `successes` counts — if the sweep's real numbers ever change, this
    is the test that breaks.
 7. **Add the ISC.** Per the [project `AGENTS.md`](../AGENTS.md)'s Protocol
-   for AI Agents: append a new `ISC-N` to `ISA.md` before writing the test,
+   for AI Agents: append a new `ISC-N` to `docs/ISA.md` before writing the test,
    so the manuscript has a stable identifier to cite.

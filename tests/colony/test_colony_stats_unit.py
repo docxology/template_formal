@@ -294,7 +294,7 @@ def test_multiple_false_starts_before_the_real_sustained_run() -> None:
 
 
 # --------------------------------------------------------------------------
-# fisher_exact_test_two_sided -- added to back manuscript/05_results_discussion.md's
+# fisher_exact_test_two_sided -- added to back docs/manuscript/05_results_discussion.md's
 # precision correction (a second Forge cross-vendor pass found the decay
 # 0.8->1.0 "not statistical noise" phrasing overreached what a formal test
 # supports; this pins the real, computed p-value the corrected prose quotes).
@@ -303,7 +303,7 @@ def test_multiple_false_starts_before_the_real_sustained_run() -> None:
 
 def test_fisher_exact_matches_manuscript_quoted_decay_dip_pvalue() -> None:
     # 60/60 (decay in {0.60, 0.80}) vs 56/60 (decay=1.00) -- see
-    # manuscript/05_results_discussion.md's "Precision correction" paragraph.
+    # docs/manuscript/05_results_discussion.md's "Precision correction" paragraph.
     p = fisher_exact_test_two_sided(60, 60, 56, 60)
     assert abs(p - 0.1187244128420599) < 1e-9
     # Not significant at the conventional alpha=0.05 threshold -- this is

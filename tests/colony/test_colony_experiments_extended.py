@@ -5,7 +5,7 @@ answering questions ``test_colony_convergence_statistics.py`` never asked.
 Each experiment below states its hypothesis and falsification criterion
 *before* the result, then reports the real, deterministically-reproduced
 numbers this test module actually computed (not rounded, not interpolated,
-not fabricated) -- see ``manuscript/05_results_discussion.md``'s
+not fabricated) -- see ``docs/manuscript/05_results_discussion.md``'s
 "Eleven pre-registered analyses" section for the prose account and the
 honesty hedges (correlation vs. causation, single-config vs.
 robust-across-configs, what is NOT shown).
@@ -18,7 +18,7 @@ dimension each hypothesis is about. Every number asserted below was
 independently reproduced by the primary session across multiple runs before
 being pinned here (this module's own seeds are fully deterministic, so
 "reproduced" means bit-for-bit identical across runs, not merely
-"statistically similar") -- see ``ISA.md``'s Decisions for the calibration
+"statistically similar") -- see ``docs/ISA.md``'s Decisions for the calibration
 record (including robustness checks at additional seed bases, two of which
 -- the heterogeneity sweep's ``seed_base=7000`` and the decay sweep's
 ``seed_base=1000`` -- are now GATED by this module's own replication tests
@@ -49,8 +49,8 @@ uncapped).
 
 Experiment (i), added afterward, closes the *other* half of a confound
 ``test_colony_convergence_statistics.py::test_positive_control_that_can_fail_wilson_upper_bound_well_below_0_5``
-disclosed and left open (see ``manuscript/05_results_discussion.md``'s
-"Disclosed calibration process" paragraph and ``ISA.md``'s ISC-91, item 3):
+disclosed and left open (see ``docs/manuscript/05_results_discussion.md``'s
+"Disclosed calibration process" paragraph and ``docs/ISA.md``'s ISC-91, item 3):
 that positive control changes ``decay`` (0.97) and ``sensing_noise_std``
 (4.0) simultaneously relative to the calibrated baseline, so it cannot
 alone attribute the near-total collapse to loss of the stigmergic
@@ -267,7 +267,7 @@ def test_decay_dip_fisher_pvalue_is_derived_from_this_sweeps_own_fixture(decay_s
     by_value = {round(point.value, 2): point for point in points}
     p = fisher_exact_test_two_sided(by_value[0.6].successes, by_value[0.6].n, by_value[1.0].successes, by_value[1.0].n)
     print(f"\ndecay dip fisher p-value (derived from decay_sweep_points): {p!r}")
-    # The exact value manuscript/05_results_discussion.md's "Precision
+    # The exact value docs/manuscript/05_results_discussion.md's "Precision
     # correction" paragraph quotes -- now pinned to the live fixture rather
     # than to test_colony_stats_unit.py's independent hardcoded literals.
     assert abs(p - 0.1187244128420599) < 1e-9
@@ -407,7 +407,7 @@ def test_heterogeneity_sweep_medium_condition_matches_the_main_statistical_test(
 # sweep and the WHOLE heterogeneity sweep -- the formal test a prior Forge
 # cross-vendor audit named as the correctly-scoped next step past the
 # pairwise Wilson/Fisher comparisons above (see
-# manuscript/05_results_discussion.md Experiment A's own "not yet done here"
+# docs/manuscript/05_results_discussion.md Experiment A's own "not yet done here"
 # hedge, now discharged).
 #
 # These reuse the EXISTING sweep fixtures verbatim -- ZERO new trial runs --
@@ -480,7 +480,7 @@ def test_fisher_exact_on_the_decay_dip_is_computed_from_the_sweep_fixture_not_a_
 ) -> None:  # type: ignore[no-untyped-def]
     """Bind the manuscript's quoted p=0.1187 to the experiment that generates it.
 
-    ``manuscript/05_results_discussion.md``'s 'Precision correction'
+    ``docs/manuscript/05_results_discussion.md``'s 'Precision correction'
     paragraph quotes a Fisher's exact two-sided p-value for the top-end
     decay dip (60/60 at decay {0.60,0.80} vs 56/60 at decay=1.00). The
     unit test ``test_fisher_exact_matches_manuscript_quoted_decay_dip_pvalue``

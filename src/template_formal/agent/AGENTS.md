@@ -24,5 +24,5 @@ class of gap (unvalidated numeric field feeding a downstream `math.log`/
 division), so a new belief type skipping it is a regression, not a new
 finding.
 
-See the project [`AGENTS.md`](../../../AGENTS.md) and [`ISA.md`](../../../ISA.md)
+See the project [`AGENTS.md`](../../../AGENTS.md) and [`docs/ISA.md`](../../../docs/ISA.md)
 for the full map and ISC-1..122 criteria.

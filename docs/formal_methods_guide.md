@@ -3,7 +3,7 @@
 This template ships two optional, independent formal side-specs of the
 handshake protocol — a Lean 4 model and a TLA+ specification — per
 ISC-35/36's ship-or-cut decision (`## Decisions` in
-[`ISA.md`](../ISA.md): "ship BOTH Lean 4 and TLA+, each wired to a real
+[`docs/ISA.md`](ISA.md): "ship BOTH Lean 4 and TLA+, each wired to a real
 runnable check"). Neither is decorative: both are wired into one script,
 [`scripts/check_formal_specs.sh`](../scripts/check_formal_specs.sh), which
 runs four checks in sequence — the Lean build, the ideal-protocol TLA+
@@ -65,7 +65,7 @@ That is because the invariant is built entirely on `iSentHello`/`rSentAck`
 reset — so it certifies **send-provenance** ("a real message was genuinely
 sent by the other peer, at some point"), not **content-integrity**
 ("the specific delivered frame was uncorrupted"). See
-[`manuscript/05_results_discussion.md`](../manuscript/05_results_discussion.md)'s
+[`docs/manuscript/05_results_discussion.md`](manuscript/05_results_discussion.md)'s
 Theorem 12, clause (iii), for the corrected wording.
 
 ### TLA+ negative control — [`AntProtocolFaultyNegControl.tla`](../formal/tla/AntProtocolFaultyNegControl.tla)
@@ -97,7 +97,7 @@ overrides the binary).
 ## Running the checks
 
 ```bash
-uv run bash projects/templates/template_formal/scripts/check_formal_specs.sh
+bash scripts/check_formal_specs.sh
 ```
 
 `tla2tools.jar` is **not** committed (a multi-MB binary has no place in a
@@ -113,7 +113,7 @@ under `formal/tla/` (gitignored) after the first successful fetch.
 This template learned the same lesson **three times now** — twice in Lean,
 and a third time in TLA+, on a different formalism entirely — which is
 itself the point: fixing one instance does not immunize the rest of the
-spec. From [`ISA.md`](../ISA.md)'s Changelog, `AntProtocol.lean`'s own
+spec. From [`docs/ISA.md`](ISA.md)'s Changelog, `AntProtocol.lean`'s own
 docstrings, and `AntProtocolFaultyNegControl.tla`'s header:
 
 **First occurrence.** An earlier revision had a theorem named
@@ -169,7 +169,7 @@ replacing a theorem) a permanent negative control,
 was added so the invariant's real detection power is proven by a passing
 check, not merely asserted in prose — see the section above.
 
-**The generalizable lesson** (`ISA.md`, round-2 Decisions entry, reconfirmed
+**The generalizable lesson** (`docs/ISA.md`, round-2 Decisions entry, reconfirmed
 by the round-6 TLA+ occurrence): fixing one instance of a defect class does
 not immunize the rest of the file — or the sibling spec in a different
 formalism — against the same class. A rule-shaped defect (`# type: ignore`

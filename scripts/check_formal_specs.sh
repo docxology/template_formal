@@ -30,15 +30,11 @@ LEAN_DIR="${FORMAL_DIR}/lean"
 TLA_DIR="${FORMAL_DIR}/tla"
 JAVA_BIN="${FORMAL_JAVA_BIN:-java}"
 TLA_JAR="${TLA_DIR}/tla2tools.jar"
-# Pinned to the tlaplus/tlaplus v1.8.0 release tag (verified to exist via
-# `curl -sI` before pinning) -- never "latest", which is a moving,
-# unverifiable download target.
+# Pin the official tlaplus/tlaplus v1.8.0 release asset.
 TLA_JAR_URL="https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar"
-# Real SHA-256 of that exact release asset, computed via `shasum -a 256`
-# against a fresh download on 2026-07-08. Any byte difference (corrupted
-# fetch, compromised mirror, silently republished release asset) must
-# fail the build, not run an unverified jar.
-TLA_JAR_SHA256="9e27b5e19a69ae1f56aabf8403a6ed5598dbfa6e638908e5278ac39736c1543d"
+# GitHub release asset 793969300, created 2026-11-26. Verified against a
+# fresh release download and the digest in the GitHub releases API.
+TLA_JAR_SHA256="67f9575c3b9ef7a0787b1bded34812862ffe79d711298e5a75b1a77720b19928"
 
 status=0
 

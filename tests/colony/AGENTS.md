@@ -1,7 +1,7 @@
 # `tests/colony/` — Agent Guide
 
 Tests `src/template_formal/colony/{pheromone,experiment,nullmodel,sweep,
-stats,demo,visualization}.py`. See [`README.md`](README.md) for the full,
+stats,demo,visualization}.py`. See [`README.md`](../../docs/reference/tests/colony/README.md) for the full,
 per-file test breakdown.
 
 ## Speed profile — read this before running the whole suite locally
@@ -23,7 +23,7 @@ skip both while iterating on the fast eight).
 - **Pre-registered means pre-registered.** `test_colony_experiments_extended.py`'s
   three hypotheses and falsification criteria are documented *before* the
   numeric result, both in the module docstring and in
-  `manuscript/05_results_discussion.md`. If you change the mechanism in a
+  `docs/manuscript/05_results_discussion.md`. If you change the mechanism in a
   way that changes these numbers, update the hypothesis's stated
   falsification criterion and the manuscript prose together with the
   pinned counts — do not silently re-pin the numbers without revisiting
@@ -67,9 +67,9 @@ skip both while iterating on the fast eight).
 
 ```bash
 # Everything (includes the two slow files)
-uv run pytest projects/templates/template_formal/tests/colony/ -v
+uv run pytest tests/colony/ -v
 
 # Fast subset only, for a quick local iteration loop
-uv run pytest projects/templates/template_formal/tests/colony/ -v \
+uv run pytest tests/colony/ -v \
   -k "not experiments_extended and not convergence_statistics"
 ```

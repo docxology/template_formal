@@ -96,7 +96,7 @@ class ColonyTrialConfig:
             floor regardless of location, destroying the sensor's ability
             to discriminate at all -- a degenerate configuration, not a
             legitimate "very tight cap"). See ``run_colony_trial`` for where
-            the clip is applied, and ``manuscript/05_results_discussion.md``
+            the clip is applied, and ``docs/manuscript/05_results_discussion.md``
             (Experiment A's ablation) for the falsifiable hypothesis this
             field exists to test.
     """

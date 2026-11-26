@@ -1,8 +1,8 @@
 # `tests/` — Agent Guide
 
 One subdirectory per `src/template_formal/` subpackage; the current collected
-test total is in [`COUNTS.md`](../../../../docs/_generated/COUNTS.md). See
-[`README.md`](README.md) for the full directory-to-responsibility map, the
+test total is in [`COUNTS.md`](https://github.com/docxology/template/blob/87704feae0a4490ef7dad9c931d268e8c30273c2/docs/_generated/COUNTS.md). See
+[`README.md`](../docs/reference/tests/README.md) for the full directory-to-responsibility map, the
 mypy-oracle harness mechanics, and measured xdist timing.
 
 ## Contracts agents must honor
@@ -45,12 +45,12 @@ uv run pytest tests -q
 uv run pytest tests -q --cov=src/template_formal --cov-report=term-missing
 
 # From the monorepo root (equivalent, see root CLAUDE.md)
-uv run pytest projects/templates/template_formal/tests/ --cov=projects/templates/template_formal/src --cov-fail-under=90
+uv run pytest tests/ --cov=src --cov-fail-under=90
 ```
 
 ## See also
 
 - [`../src/template_formal/AGENTS.md`](../src/template_formal/AGENTS.md) —
   the honesty-line discipline these tests exist to enforce.
-- [`../ISA.md`](../ISA.md) — ISC numbers cited throughout this suite's
+- [`../ISA.md`](../docs/ISA.md) — ISC numbers cited throughout this suite's
   docstrings (ISC-1..122).

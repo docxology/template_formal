@@ -35,7 +35,7 @@ scientific claim on top of the type architecture.
 - **Zero mocks; real everything.** Real on-disk SQLite (`tmp_path`), real
   in-process fault injection, real `mypy --strict` subprocess calls — never
   `MagicMock`/`mocker.patch`/`unittest.mock`.
-- **Every new ISC goes into `ISA.md` before the code that satisfies it** —
+- **Every new ISC goes into `docs/ISA.md` before the code that satisfies it** —
   the manuscript cites specific ISC numbers, so a change without one has
   no stable identifier to point at. Append, never renumber.
 - **A statistical claim needs its falsification criterion stated before
@@ -51,13 +51,13 @@ scientific claim on top of the type architecture.
 ## Status
 
 This exemplar is a **tracked public canonical project** (see
-[`docs/_generated/active_projects.md`](../../../../docs/_generated/active_projects.md)).
+[`docs/_generated/active_projects.md`](https://github.com/docxology/template/blob/87704feae0a4490ef7dad9c931d268e8c30273c2/docs/_generated/active_projects.md)).
 
 ## See also
 
 - [`../AGENTS.md`](../AGENTS.md) — project map, Layer contract, mypy-oracle
   fixture protocol, anti-patterns
-- [`../ISA.md`](../ISA.md) — the full Ideal-State Artifact: every ISC, the
+- [`../ISA.md`](ISA.md) — the full Ideal-State Artifact: every ISC, the
   adversarial-round Decisions/Changelog history, and Verification trail
-- [`../manuscript/`](../manuscript) — the rendered argument these guides
+- [`../manuscript/`](manuscript) — the rendered argument these guides
   summarize practically for an extending agent

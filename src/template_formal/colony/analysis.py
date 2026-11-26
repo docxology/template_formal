@@ -106,6 +106,11 @@ def run_publication_analysis(project_root: Path) -> AnalysisArtifacts:
             ),
             "section": "Colony convergence",
             "generated_by": "template_formal.colony.visualization.write_demo_convergence_figure",
+            "metadata": {
+                "alt_text": (
+                    "Two panels show pheromone concentration by location and the winning location's share at each tick."
+                )
+            },
         },
         "fig:convergence-tick-distribution": {
             "label": "fig:convergence-tick-distribution",
@@ -116,6 +121,11 @@ def run_publication_analysis(project_root: Path) -> AnalysisArtifacts:
             ),
             "section": "Colony convergence",
             "generated_by": "template_formal.colony.visualization.write_convergence_tick_histogram",
+            "metadata": {
+                "alt_text": (
+                    "A histogram and cumulative distribution show when simulated trials reached sustained consensus."
+                )
+            },
         },
     }
     figures_dir.mkdir(parents=True, exist_ok=True)
