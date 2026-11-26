@@ -10,7 +10,7 @@ and `tests/colony/test_colony_integration.py`, neither of which
 therefore structurally blind to a broken structural conformance between
 `InMemoryPheromoneField` and the `PheromoneField` Protocol it claims to
 satisfy (mirrors the `Agent[BeliefState]` blind spot documented in
-ISA.md's Changelog, found by Forge's cross-vendor audit). See
+docs/ISA.md's Changelog, found by Forge's cross-vendor audit). See
 `bad_pheromone_protocol_violation.py` for the paired negative control that
 proves mypy actually rejects a broken conformance of this same shape.
 """

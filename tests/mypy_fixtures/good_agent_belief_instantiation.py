@@ -6,7 +6,7 @@ mutable attributes, which a `frozen=True` dataclass (`BeliefState`) can
 never satisfy under mypy --strict -- and because `src/` itself never
 instantiates `Agent[StateT]` with a concrete type argument, the src-only
 mypy run was blind to the break (Forge cross-vendor audit finding,
-CRITICAL-1; see ISA.md Changelog). This fixture is the regression guard:
+CRITICAL-1; see docs/ISA.md Changelog). This fixture is the regression guard:
 `Agent[BeliefState]` (and a `list[...]` of them) must keep type-checking.
 """
 

@@ -19,5 +19,5 @@ marker, it must be added to `PhaseT`'s `TypeVar` bound and to every
 `Generic[PhaseT]` consumer's phase-transition surface (`protocol/session.py`)
 in the same change, not left to drift.
 
-See the project [`AGENTS.md`](../../../AGENTS.md) and [`ISA.md`](../../../ISA.md)
+See the project [`AGENTS.md`](../../../AGENTS.md) and [`docs/ISA.md`](../../../docs/ISA.md)
 for the full map and ISC-1..122 criteria.

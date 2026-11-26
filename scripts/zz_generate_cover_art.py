@@ -8,7 +8,7 @@ real on-disk path and prints it for manifest collection (mirrors
 
 Unlike the pipeline figures in ``02_run_analysis.py`` (written to the
 disposable ``output/figures/`` tree), the cover art is committed static
-content under ``manuscript/figures/`` -- the title page must render from
+content under ``docs/manuscript/figures/`` -- the title page must render from
 a fresh clone without first running the analysis pipeline, matching
 ``template_pools_rules_tools`` and ``template_textbook``'s convention for
 authored design assets rather than data-derived figures.
@@ -29,7 +29,7 @@ for _path in (_PROJECT_ROOT, _PROJECT_ROOT / "src", _PROJECT_ROOT.parents[2]):
 def main() -> int:
     from template_formal.colony.cover_art import COVER_ART_FILENAME, require_cover_art
 
-    output_path = _PROJECT_ROOT / "manuscript" / "figures" / COVER_ART_FILENAME
+    output_path = _PROJECT_ROOT / "docs" / "manuscript" / "figures" / COVER_ART_FILENAME
     written = require_cover_art(output_path, seed=42)
     print(str(written))
     return 0

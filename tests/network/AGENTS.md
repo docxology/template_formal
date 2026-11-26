@@ -1,6 +1,6 @@
 # `tests/network/` — Agent Guide
 
-Tests `src/template_formal/network/bus.py`. See [`README.md`](README.md)
+Tests `src/template_formal/network/bus.py`. See [`README.md`](../../docs/reference/tests/network/README.md)
 for the full test breakdown.
 
 ## Contract
@@ -10,7 +10,7 @@ for the full test breakdown.
   second for the whole directory. If a change makes this directory slow,
   something has leaked real I/O or an unbounded loop into what's supposed
   to be a pure in-process bus.
-- **No real sockets, ever.** Per `../../ISA.md`'s Out of Scope, this
+- **No real sockets, ever.** Per `../../docs/ISA.md`'s Out of Scope, this
   directory (and the module it tests) must never import `socket`,
   `asyncio` networking primitives, or any message-broker client. The bus
   is an in-process, fault-injectable substitute; keep it that way.
@@ -34,5 +34,5 @@ for the full test breakdown.
 ## Running just this directory
 
 ```bash
-uv run pytest projects/templates/template_formal/tests/network/ -v
+uv run pytest tests/network/ -v
 ```

@@ -5,7 +5,7 @@ answering questions ``test_colony_convergence_statistics.py`` never asked.
 Each experiment below states its hypothesis and falsification criterion
 *before* the result, then reports the real, deterministically-reproduced
 numbers this test module actually computed (not rounded, not interpolated,
-not fabricated) -- see ``manuscript/05_results_discussion.md``'s
+not fabricated) -- see ``docs/manuscript/05_results_discussion.md``'s
 "Eleven pre-registered analyses" section for the prose account and the
 honesty hedges (correlation vs. causation, single-config vs.
 robust-across-configs, what is NOT shown).
@@ -18,7 +18,7 @@ dimension each hypothesis is about. Every number asserted below was
 independently reproduced by the primary session across multiple runs before
 being pinned here (this module's own seeds are fully deterministic, so
 "reproduced" means bit-for-bit identical across runs, not merely
-"statistically similar") -- see ``ISA.md``'s Decisions for the calibration
+"statistically similar") -- see ``docs/ISA.md``'s Decisions for the calibration
 record (including robustness checks at additional seed bases, two of which
 -- the heterogeneity sweep's ``seed_base=7000`` and the decay sweep's
 ``seed_base=1000`` -- are now GATED by this module's own replication tests
@@ -49,8 +49,8 @@ uncapped).
 
 Experiment (i), added afterward, closes the *other* half of a confound
 ``test_colony_convergence_statistics.py::test_positive_control_that_can_fail_wilson_upper_bound_well_below_0_5``
-disclosed and left open (see ``manuscript/05_results_discussion.md``'s
-"Disclosed calibration process" paragraph and ``ISA.md``'s ISC-91, item 3):
+disclosed and left open (see ``docs/manuscript/05_results_discussion.md``'s
+"Disclosed calibration process" paragraph and ``docs/ISA.md``'s ISC-91, item 3):
 that positive control changes ``decay`` (0.97) and ``sensing_noise_std``
 (4.0) simultaneously relative to the calibrated baseline, so it cannot
 alone attribute the near-total collapse to loss of the stigmergic
@@ -198,7 +198,7 @@ the diagnostic print, but is intentionally not the acceptance predicate."""
 #   - 15.0, 16.0, 17.0, 18.0: a fine-grained scan of the interior band
 #     between the informal probe's "unchanged" ceiling (14.0) and its
 #     "faded out" floor (20.0), added specifically because a first,
-#     coarser scan (informal, not gated -- see ISA.md's Decisions for this
+#     coarser scan (informal, not gated -- see docs/ISA.md's Decisions for this
 #     round) showed the transition was NOT smooth across that whole band
 #     and a coarse 5-point sweep would have missed how compressed it is.
 #   - 20.0: the informal probe's own named fade-out point, gated here

@@ -4,7 +4,7 @@ Four thin orchestrators: [`00_setup_environment.py`](00_setup_environment.py),
 [`02_run_analysis.py`](02_run_analysis.py),
 [`zz_generate_cover_art.py`](zz_generate_cover_art.py),
 [`check_formal_specs.sh`](check_formal_specs.sh). See
-[`README.md`](README.md) for what each one wires up.
+[`README.md`](../docs/reference/scripts.md) for what each one wires up.
 
 ## Contract
 

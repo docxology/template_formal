@@ -3,9 +3,9 @@
 The package root. Six subpackages — [`types/`](types/), [`storage/`](storage/),
 [`protocol/`](protocol/), [`network/`](network/), [`agent/`](agent/),
 [`colony/`](colony/) — each own exactly one concern the manuscript argues for.
-See [`README.md`](README.md) for the responsibility table and the module-layout
+See [`README.md`](../../docs/reference/src/template_formal/README.md) for the responsibility table and the module-layout
 diagram (reproduced from
-[`manuscript/02_type_architecture.md`](../../manuscript/02_type_architecture.md)).
+[`docs/manuscript/02_type_architecture.md`](../../docs/manuscript/02_type_architecture.md)).
 
 ## Layer-dependency contract (enforce, don't just document)
 
@@ -21,7 +21,7 @@ colony/   <- agent/, types/
 Before adding an import between two subpackages, check this table. A new
 edge not listed here (e.g. `colony/` importing `storage/` directly, bypassing
 `Agent`) breaks the "every layer is exercised by the colony loop, never
-bypassed" claim `manuscript/02_type_architecture.md`'s module-layout section
+bypassed" claim `docs/manuscript/02_type_architecture.md`'s module-layout section
 makes — that claim is a real dependency-graph fact this diagram encodes, not
 decoration. `colony/nullmodel.py` is the one module that goes further and is
 *tested* to avoid a dependency (see
@@ -50,14 +50,14 @@ sentence and, if the claim is checkable, a `tests/mypy_fixtures/bad_*.py` or
 `good_*.py` fixture wired into `tests/test_mypy_oracle.py`'s
 `_EXPECTED_BAD_FIXTURE_SUBSTRINGS` map — an unbound claim is not verified,
 per this repo's Proof-of-Detection discipline. See
-[`../../manuscript/02_type_architecture.md#sec:honesty-line`](../../manuscript/02_type_architecture.md)
+[`../../manuscript/02_type_architecture.md#sec:honesty-line`](../../docs/manuscript/02_type_architecture.md)
 for the canonical statement of every current claim's scope.
 
 ## See also
 
-- [`../README.md`](../README.md) / [`../AGENTS.md`](../AGENTS.md) — the `src/`
+- [`../README.md`](../../docs/reference/src/README.md) / [`../AGENTS.md`](../AGENTS.md) — the `src/`
   layer this package sits inside (src-layout rationale).
 - [`../../tests/AGENTS.md`](../../tests/AGENTS.md) — how each subpackage is
   exercised (no-mocks policy, mypy-oracle harness, coverage gate).
-- [`../../ISA.md`](../../ISA.md) — the full 122-ISC build history this
+- [`../../ISA.md`](../../docs/ISA.md) — the full 122-ISC build history this
   package's docstrings cite by number (ISC-1..122).

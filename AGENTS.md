@@ -103,28 +103,11 @@ flowchart TB
     class SRC_F,SC_F,T_F,M_F f
 ```
 
-## Installation/Setup
+## Setup and use
 
-Install dependencies from the **repository root** with `uv sync` (see root
-[`pyproject.toml`](https://github.com/docxology/template/blob/main/pyproject.toml)). `template_formal/pyproject.toml`
-pins pytest/coverage/mypy settings and documents the project name for
-isolated runs of this tree.
-
-## Usage Examples
-
-```bash
-# From the repository root — run the demo colony pipeline
-uv run python projects/templates/template_formal/scripts/02_run_analysis.py
-
-# Run tests with coverage
-uv run pytest projects/templates/template_formal/tests/ --cov=projects/templates/template_formal/src --cov-fail-under=90
-
-# mypy --strict oracle (the MYPYPATH/explicit-package-bases form is the one
-# that actually gates this project — see README.md "Prerequisites & verification")
-MYPYPATH=projects/templates/template_formal/src \
-  uv run mypy --strict --explicit-package-bases --namespace-packages \
-  projects/templates/template_formal/src
-```
+Follow the [testing guide](docs/testing_guide.md) for the standalone
+environment, coverage gate, and strict mypy command. Follow the
+[rendering guide](docs/rendering.md) for analysis and publication outputs.
 
 ## Adding a mypy-oracle fixture
 
@@ -157,12 +140,12 @@ key on.
 
 **Critical Directive**: Before modifying this project, AI agents *must*:
 
-- **Add new Ideal-State Criteria to `ISA.md` before writing code**, not
+- **Add new Ideal-State Criteria to `docs/ISA.md` before writing code**, not
   after. This template's manuscript (@sec:type-architecture,
   @sec:results-discussion) cites specific ISC numbers for every strong
-  claim it makes — a change that isn't backed by an ISC in `ISA.md` has no
+  claim it makes — a change that isn't backed by an ISC in `docs/ISA.md` has no
   stable identifier for the manuscript, `tests/mypy_fixtures/`, or
-  `TODO.md` to point at. Follow `ISA.md`'s existing numbering convention
+  `docs/backlog.md` to point at. Follow `docs/ISA.md`'s existing numbering convention
   (`ISC-N`, grouped by module, anti-criteria called out explicitly) when
   appending — do not renumber existing ISCs, only append new ones or
   supersede one via a `## Decisions`/`## Changelog` entry, per this repo's
@@ -177,18 +160,11 @@ key on.
 - Keep `scripts/` thin — business logic belongs in `src/template_formal/`.
 - Never use `MagicMock`/`unittest.mock`/`mocker.patch` anywhere in `tests/`.
 
-## Testing
-
-```bash
-uv run pytest projects/templates/template_formal/tests/ -v
-uv run pytest projects/templates/template_formal/tests/ --cov=projects/templates/template_formal/src --cov-report=html
-```
-
 ## Optional formal side-spec
 
 `formal/lean/` (Lean 4) and `formal/tla/` (TLA+) model the handshake
 protocol. Both are wired to one real runnable check each via
-`scripts/check_formal_specs.sh` — see [`TODO.md`](TODO.md) for the decision
+`scripts/check_formal_specs.sh` — see [`docs/backlog.md`](docs/backlog.md) for the decision
 record (ISC-35/36: shipped, not cut).
 
 ## Anti-patterns (do not do these)
@@ -215,4 +191,4 @@ See [README.md](README.md) for the project overview and quick start.
 
 - [Root AGENTS.md](https://github.com/docxology/template/blob/main/projects/AGENTS.md) - Template documentation
 - [`../../AGENTS.md`](https://github.com/docxology/template/blob/main/projects/AGENTS.md#permanent-canonical-exemplars) — public exemplar roster
-- [`manuscript/references.bib`](manuscript/references.bib) — full bibliography
+- [`manuscript/references.bib`](docs/manuscript/references.bib) — full bibliography

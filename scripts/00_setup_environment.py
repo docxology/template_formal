@@ -12,14 +12,17 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(REPO_ROOT))
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+for parent in PROJECT_ROOT.parents:
+    if (parent / "infrastructure" / "rendering" / "preflight.py").is_file():
+        sys.path.insert(0, str(parent))
+        break
 
 from infrastructure.rendering.preflight import run_manuscript_preflight  # noqa: E402
 
 
 def main() -> int:
-    manuscript_dir = Path(__file__).resolve().parent.parent / "manuscript"
+    manuscript_dir = PROJECT_ROOT / "docs" / "manuscript"
     ok, message = run_manuscript_preflight(manuscript_dir)
     if ok:
         return 0

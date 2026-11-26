@@ -4,6 +4,9 @@
     "filename": "colony_convergence_tick_distribution.png",
     "generated_by": "template_formal.colony.visualization.write_convergence_tick_histogram",
     "label": "fig:convergence-tick-distribution",
+    "metadata": {
+      "alt_text": "A histogram and cumulative distribution show when simulated trials reached sustained consensus."
+    },
     "section": "Colony convergence"
   },
   "fig:demo-convergence": {
@@ -11,6 +14,9 @@
     "filename": "colony_demo_convergence.png",
     "generated_by": "template_formal.colony.visualization.write_demo_convergence_figure",
     "label": "fig:demo-convergence",
+    "metadata": {
+      "alt_text": "Two panels show pheromone concentration by location and the winning location's share at each tick."
+    },
     "section": "Colony convergence"
   }
 }

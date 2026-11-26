@@ -6,20 +6,17 @@ a real in-process message bus with seeded fault injection, and real
 
 ## Running the suite
 
-From the **repository root** (the isolated-venv-resolving invocation this
-project's own gate is bound to — see `ISA.md`'s Changelog for why a bare
-root-venv `pytest` run is not sufficient evidence):
+From the standalone project root:
 
-```bash
-uv run python scripts/pipeline/stage_01_test.py --project templates/template_formal --project-only
+```sh
+uv sync --locked --python 3.14 --extra dev
+uv run --no-sync pytest tests --cov=src --cov-fail-under=90
+MYPYPATH=src uv run --no-sync mypy --strict --explicit-package-bases --namespace-packages src
 ```
 
-Or directly, from inside the project directory:
-
-```bash
-uv run pytest projects/templates/template_formal/tests/ -v
-uv run pytest projects/templates/template_formal/tests/ --cov=projects/templates/template_formal/src --cov-report=html
-```
+Inside a full template checkout, the Stage 01 test runner uses the
+project environment when invoked with `--project-only`. From the template
+root, pass the project's selector, for example `templates/template_formal`.
 
 `pythonpath = [".", "src"]`, `testpaths`, and coverage settings live in
 [`pyproject.toml`](../pyproject.toml); `tests/conftest.py` additionally
@@ -45,7 +42,7 @@ both `template_formal.*` and any repo-root imports.
 
 Zero `MagicMock`/`mocker.patch`/`unittest.mock` anywhere — a repo-wide,
 hard rule (`grep -rn "MagicMock\|mocker.patch\|unittest.mock"
-projects/templates/template_formal/tests/` must return nothing). Every
+tests/` must return nothing). Every
 test in this project backs its claim with a real artifact: an on-disk
 SQLite file via `tmp_path` for anything claiming durability
 (`open_fast_test_database`'s `:memory:` escape hatch is named and
@@ -62,13 +59,13 @@ the floor — check the exact current figure yourself rather than trusting a
 number in this document, since it moves as the suite grows:
 
 ```bash
-uv run python scripts/pipeline/stage_01_test.py --project templates/template_formal --project-only
+uv run --no-sync pytest tests --cov=src --cov-fail-under=90
 ```
 
 ISC-67 (anti-criterion) requires every covered line to be reachable from
 at least one *behavioral* assertion — coverage achieved by testing that a
 type annotation exists, rather than exercising real behavior, does not
-count, and is spot-checked in `ISA.md`'s Verification section.
+count, and is spot-checked in `docs/ISA.md`'s Verification section.
 
 ## The mypy-as-oracle harness
 
@@ -96,7 +93,7 @@ The authoritative invocation is `MYPYPATH=<project>/src` +
 repo-root `mypy --strict` command resolves the same file under two
 different module identities and produces spurious `Generic[...]`/
 `"SessionEndpoint" expects no type arguments` errors unrelated to any real
-defect (`ISA.md`'s Changelog documents the exact repro). Don't invoke mypy
+defect (`docs/ISA.md`'s Changelog documents the exact repro). Don't invoke mypy
 any other way and trust the result.
 
 ## Test parallelization: what `pytest-xdist` actually buys you here
@@ -105,8 +102,8 @@ any other way and trust the result.
 group (`pyproject.toml`), so both of these work:
 
 ```bash
-uv run pytest projects/templates/template_formal/tests/ -n auto
-uv run pytest projects/templates/template_formal/tests/ -n 4
+uv run --no-sync pytest tests/ -n auto
+uv run --no-sync pytest tests/ -n 4
 ```
 
 **Honest finding on wall-clock**: cross-test parallelism speeds up the

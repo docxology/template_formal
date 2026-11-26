@@ -25,5 +25,5 @@ constraint violation — a new method following that pattern should catch
 `sqlite3.Error`/`sqlite3.IntegrityError` explicitly rather than letting them
 propagate.
 
-See the project [`AGENTS.md`](../../../AGENTS.md) and [`ISA.md`](../../../ISA.md)
+See the project [`AGENTS.md`](../../../AGENTS.md) and [`docs/ISA.md`](../../../docs/ISA.md)
 for the full map and ISC-1..122 criteria.
