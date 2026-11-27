@@ -19,10 +19,8 @@ mypy-oracle harness mechanics, and measured xdist timing.
   emits (captured by actually running mypy against the fixture, not
   predicted). A `bad_*.py` fixture with no map entry raises `KeyError` by
   design — this is intentional, not a bug to silence.
-- **Coverage floor is 90%, currently ~95.5%.** Run
-  `uv run pytest tests -q --cov=src/template_formal --cov-report=term-missing`
-  before treating a change as complete; a merge that drops coverage below
-  90% fails CI.
+- **Coverage floor is 90%.** Run the coverage command below
+  before treating a change as complete. The gate fails below 90%.
 - **The two heavy sweep test files are sequential by design.**
   `test_colony_convergence_statistics.py` and
   `test_colony_experiments_extended.py` each run hundreds of real trials in
@@ -37,15 +35,21 @@ mypy-oracle harness mechanics, and measured xdist timing.
 
 ## Running tests
 
+From the standalone repository root, install the locked development
+dependencies before running pytest. See the [testing guide](../docs/testing_guide.md)
+for the strict mypy check and suite details.
+
 ```bash
-# From the project directory
-uv run pytest tests -q
+uv sync --locked --python 3.14 --extra dev
+
+# Without coverage
+uv run --no-sync python -m pytest tests -q
+
+# Type-checking fixtures
+uv run --no-sync python -m pytest tests/test_mypy_oracle.py -q
 
 # With coverage
-uv run pytest tests -q --cov=src/template_formal --cov-report=term-missing
-
-# From the monorepo root (equivalent, see root CLAUDE.md)
-uv run pytest tests/ --cov=src --cov-fail-under=90
+uv run --no-sync python -m pytest tests -q --cov=src --cov-report=term-missing --cov-fail-under=90
 ```
 
 ## See also
